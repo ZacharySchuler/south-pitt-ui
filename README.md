@@ -1,3 +1,15 @@
+# Branching Strategy:
+
+## Production Branche:
+
+- master -> the main production branch - auto-deploys to southpittrugby.com
+
+## Non Prod branches:
+- dev-main -> the WIP branch - to be merged into master when feature sets are finalized -> deployed to dev-main-south-pitt-ui.zrschu.workers.dev
+
+- <$INSERT_BRANCH_NAME_HERE> -> any feature branch - to be merged into dev-main -> deployed to $<INSERT_BRANCH_NAME_HERE>-south-pitt-ui.zrschu.workers.dev
+
+
 # Deployment:
 
 This repo is configured to deploy automatically using CloudFlare workers.
