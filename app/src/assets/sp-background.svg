@@ -1,0 +1,27 @@
+<svg width="100%" height="100%" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Linear gradient alternating blue and gold -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f3c88"></stop>
+      <stop offset="35%" stop-color="#f2c94c"></stop>
+      <stop offset="65%" stop-color="#1f3c88"></stop>
+      <stop offset="100%" stop-color="#f2c94c"></stop>
+    </linearGradient>
+
+    <!-- Soft blur filter -->
+    <filter id="softBlur">
+      <feGaussianBlur stdDeviation="80"></feGaussianBlur>
+    </filter>
+  </defs>
+
+  <!-- Base gradient background -->
+  <rect width="1440" height="900" fill="url(#bgGradient)"></rect>
+
+  <!-- Abstract blurred blobs -->
+  <g filter="url(#softBlur)" opacity="0.75">
+    <circle cx="300" cy="250" r="280" fill="#1f3c88"></circle>
+    <circle cx="1100" cy="300" r="320" fill="#f2c94c"></circle>
+    <circle cx="600" cy="700" r="350" fill="#1f3c88"></circle>
+    <circle cx="1200" cy="750" r="280" fill="#f2c94c"></circle>
+  </g>
+</svg>
