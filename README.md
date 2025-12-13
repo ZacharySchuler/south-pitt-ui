@@ -1,32 +1,23 @@
-# Astro Starter Kit: Basics
+# Deployment:
 
-```sh
-npm create astro@latest -- --template basics
-```
+This repo is configured to deploy automatically using CloudFlare workers.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The domain is bought on porkbun but namespace servers are configured for cloudflare
 
-## 🚀 Project Structure
 
-Inside of your Astro project, you'll see the following folders and files:
+# Accounts Invovled:
+- Cloudflare: Hosting / Deployments
+    Username Zrschu (Zachary Schuler's) (hopefully this will get changed)
+- Porkbun - Domain Registrar (where we get the domain)
+    Username: SouthPitt
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+
+
+# Contributing:
+
+## Local Set up:
+- node version is v20.17.0
 
 ## 🧞 Commands
 
@@ -41,6 +32,10 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 👀 Want to learn more?
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+
+# Explaination of the repo:
+
+
+TODO
