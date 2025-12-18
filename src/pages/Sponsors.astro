@@ -1,6 +1,118 @@
 ---
 import Layout from "../layouts/Layout.astro"
+import anytimeFitnessLogo from "../assets/sponsors/Anytime-Fitness-logo.png"
+import davidBallarottoLogo from "../assets/sponsors/david-ballarotto.svg"
+import eightPointFinancialLogo from "../assets/sponsors/eightpoint-financial.png"
+import northeasternIndustrialInsulationLogo from "../assets/sponsors/northeastern-industrial-insulation.jpeg"
+import whiteClawLogo from "../assets/sponsors/white-claw-hard-seltzer-logo-vector.svg"
+
+
+const images = [
+{ src: anytimeFitnessLogo.src, alt: "Anytime-Fitness-Logo" },
+{ src: davidBallarottoLogo.src, alt: "David-Ballarotto-Logo" },
+{ src: eightPointFinancialLogo.src, alt: "Eightpoint-Financial-Logo" },
+{ src: northeasternIndustrialInsulationLogo.src, alt: "Northeastern-Industrial-Insulation-Logo" },
+{ src: whiteClawLogo.src, alt: "White-Claw-Logo" }
+];
 ---
 <Layout>
-Sponsors
+
+<!DOCTYPE html>
+<main>
+<h1>Team Sponsors</h1>
+
+<section class="grid">
+{images.map((image) => (
+<div class="grid-item">
+<img src={image.src} alt={image.alt} loading="lazy" />
+</div>
+))}
+
+</section>
+
+<section>
+<h1> Interested in Sponoring the Team?</h1>
+
+For sponsorship inquiries, please contact TODO: INSERT CONTACT
+</section>
+</main>
+
+
+<style>
+:root {
+--gap: 1rem;
+--radius: 16px;
+}
+
+
+body {
+margin: 0;
+font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+background: #f7f9fc;
+color: #1f2933;
+}
+
+
+main {
+max-width: 1200px;
+margin: 0 auto;
+padding: 1.25rem;
+}
+
+
+h1 {
+text-align: center;
+margin-bottom: 1.5rem;
+font-size: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+
+/* Responsive grid */
+.grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+gap: var(--gap);
+}
+
+
+/* Individual image card */
+.grid-item {
+position: relative;
+overflow: hidden;
+border-radius: var(--radius);
+background: #e5e7eb;
+/* Let height be determined by image ratio */
+}
+
+
+.grid-item img {
+width: 100%;
+height: 100%;
+object-fit: contain;
+background-color: #e5e7eb;
+display: block;
+transition: transform 0.3s ease;
+}
+
+
+.grid-item:hover img {
+transform: scale(1.05);
+}
+
+
+/* Tablet breakpoint */
+@media (min-width: 640px) {
+.grid {
+grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+}
+
+
+/* Desktop breakpoint */
+@media (min-width: 1024px) {
+.grid {
+grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+}
+</style>
 </Layout>

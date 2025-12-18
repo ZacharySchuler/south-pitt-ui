@@ -47,7 +47,15 @@ All commands are run from the root of the project, from a terminal:
 
 
 
-# Explaination of the repo:
-
-
+## Explaination of the repo:
 TODO
+
+
+## What still needs done?
+[] Landing page 
+[] About Us page
+[] becoming a Hooligan
+[] Schedule
+[x] Sponsors - Need to add Contact
+[] Culture
+[] Contact Us
