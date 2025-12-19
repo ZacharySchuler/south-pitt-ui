@@ -1,0 +1,35 @@
+---
+import anytimeFitnessLogo from "../assets/sponsors/Anytime-Fitness-logo.png"
+import davidBallarottoLogo from "../assets/sponsors/david-ballarotto.svg"
+import eightPointFinancialLogo from "../assets/sponsors/eightpoint-financial.png"
+import northeasternIndustrialInsulationLogo from "../assets/sponsors/northeastern-industrial-insulation.jpeg"
+import whiteClawLogo from "../assets/sponsors/white-claw-hard-seltzer-logo-vector.svg"
+
+const images = [
+  anytimeFitnessLogo,
+  davidBallarottoLogo,
+  eightPointFinancialLogo,
+  northeasternIndustrialInsulationLogo,
+  whiteClawLogo
+];
+---
+<div class="sponsor-strip">
+  {images.map(img => (
+    <img src={img.src} alt="Sponsor logo" loading="lazy" />
+  ))}
+</div>
+
+<style>
+.sponsor-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.sponsor-strip img {
+  height: 50px;
+  object-fit: contain;
+}
+</style>
