@@ -22,13 +22,40 @@ const images = [
 <style>
 .sponsor-strip {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;          /* fill the footer height dynamically */
+  width: 100%;
+  max-width: 1200px;     /* optional max width for large screens */
+  padding: 0 2rem;
+  gap: 2rem;
 }
 
 .sponsor-strip img {
-  height: 100px;
-  object-fit: contain;
+  height: 100%;          /* scale images to fill parent height */
+  object-fit: contain;   /* maintain logo aspect ratio */
+  max-width: 150px;      /* prevent images from being too wide */
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .sponsor-strip {
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  .sponsor-strip img {
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sponsor-strip {
+    flex-wrap: wrap;      /* wrap logos on very small screens */
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .sponsor-strip img {
+    max-width: 80px;
+  }
 }
 </style>
