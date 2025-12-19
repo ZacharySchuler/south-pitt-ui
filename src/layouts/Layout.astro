@@ -20,7 +20,10 @@ const { title = "My Website" } = Astro.props;
     <header>
       <nav class="top-nav">
         <div class="harry_header_icon">
-          <img src={harry_icon.src} alt="Harry Icon" />
+          <a href="/">
+            <img src={harry_icon.src} alt="Harry Icon"  />
+          </a>
+          
         </div>
         
         <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
@@ -30,12 +33,12 @@ const { title = "My Website" } = Astro.props;
         </button>
 
         <div class="nav-links">
-          <a href="/About-Us/">About Us</a>
-          <a href="/Join/">Becoming a Hooligan</a>
-          <a href="/Schedule/">Schedule</a>
-          <a href="/Sponsors/">Sponsors</a>
-          <a href="/Culture/">Culture</a>
-          <a href="/Contact-Us/">Contact Us</a>
+          <a href="/about-us/">About Us</a>
+          <a href="/join/">Becoming a Hooligan</a>
+          <a href="/schedule/">Schedule</a>
+          <a href="/sponsors/">Sponsors</a>
+          <a href="/culture/">Culture</a>
+          <a href="/contact-us/">Contact Us</a>
         </div>
       </nav>
     </header>
@@ -240,7 +243,6 @@ const { title = "My Website" } = Astro.props;
   /* Main content */
   main {
     flex: 1;
-    max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1.5rem;
     width: 100%;
