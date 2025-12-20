@@ -120,7 +120,7 @@ const { title = "My Website" } = Astro.props;
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 3px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
     height:10vh;
   }
 
@@ -233,13 +233,14 @@ const { title = "My Website" } = Astro.props;
   /* Footer */
 footer {
   background: linear-gradient(90deg, var(--primary), var(--accent));
+  /* background: black; */
   color: white;
-  height: 20vh;              /* set footer height */
+  height: 10vh;              /* set footer height */
   display: flex;
   justify-content: center;   /* horizontally center sponsor-strip */
   align-items: center;       /* vertically center sponsor-strip */
   width: 100%;
-  border-top: 3px solid #ffffff;
+  border-top: 1px solid #ffffff;
   flex-shrink: 0;            /* prevent footer from shrinking */
 }
   .bottom-nav {
