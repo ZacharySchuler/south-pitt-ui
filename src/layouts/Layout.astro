@@ -1,13 +1,8 @@
 ---
 // Base layout for an Astro site
-// Usage:
-// ---
-// import BaseLayout from "../layouts/BaseLayout.astro";
-// ---
-// <BaseLayout title="My Site">...</BaseLayout>
 import harry_icon from "../assets/harry.svg";
 import SponsorStrip from "../components/SponsorStrip.astro";
-import SocialMediaStrip from "../components/SocialMediaStrip.astro";
+
 const { title = "My Website" } = Astro.props;
 ---
 
@@ -18,6 +13,7 @@ const { title = "My Website" } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
   </head>
+
   <body>
     <header>
       <nav class="top-nav">
@@ -26,6 +22,7 @@ const { title = "My Website" } = Astro.props;
             <img src={harry_icon.src} alt="Harry Icon" />
           </a>
         </div>
+
         <div class="nav-center">
           <div class="nav-links">
             <a href="/about-us/">About Us</a>
@@ -37,7 +34,7 @@ const { title = "My Website" } = Astro.props;
           </div>
         </div>
 
-        <button class="mobile-menu-toggle"> ☰ </button>
+        <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
       </nav>
     </header>
 
@@ -54,28 +51,21 @@ const { title = "My Website" } = Astro.props;
       const navLinks = document.querySelector(".nav-links");
 
       toggle?.addEventListener("click", () => {
-        const isOpen = navLinks?.classList.toggle("active");
-        toggle.classList.toggle("active");
-        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        const isOpen = navLinks.classList.toggle("active");
+        toggle.setAttribute("aria-expanded", String(isOpen));
         document.body.style.overflow = isOpen ? "hidden" : "";
       });
 
-      // Close menu when clicking a link
       navLinks?.querySelectorAll("a").forEach((link) => {
         link.addEventListener("click", () => {
           navLinks.classList.remove("active");
-          toggle?.classList.remove("active");
-          toggle?.setAttribute("aria-expanded", "false");
           document.body.style.overflow = "";
         });
       });
 
-      // Close menu on escape key
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && navLinks?.classList.contains("active")) {
-          navLinks.classList.remove("active");
-          toggle?.classList.remove("active");
-          toggle?.setAttribute("aria-expanded", "false");
+        if (e.key === "Escape") {
+          navLinks?.classList.remove("active");
           document.body.style.overflow = "";
         }
       });
@@ -97,44 +87,47 @@ const { title = "My Website" } = Astro.props;
     padding: 0;
   }
 
+  html,
   body {
-    font-family:
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      sans-serif;
-    color: var(--text);
-    background: var(--bg);
-    min-height: 100vh;
-    height:100%;
-    display: flex;
-    flex-direction: column;
+    height: 100%;
   }
 
-  /* Top navigation */
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+    background: var(--bg);
+    color: var(--text);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh; /* mobile-safe viewport */
+  }
+
+  /* ================= HEADER ================= */
+
   header {
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    color: white;
-    padding: 1rem 1.5rem;
     position: sticky;
     top: 0;
     z-index: 100;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
     border-bottom: 1px solid #ffffff;
-    height:10vh;
   }
 
   .top-nav {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    width: 100%;
+    padding: 1rem 1.5rem;
   }
 
   .nav-left {
     display: flex;
     align-items: center;
-    padding-left: 1.5rem;
+  }
+
+  .harry_header_icon img {
+    height: 40px;
+    display: block;
   }
 
   .nav-center {
@@ -144,71 +137,7 @@ const { title = "My Website" } = Astro.props;
 
   .nav-links {
     display: flex;
-    gap: 1.75rem;
-    align-items: center;
-  }
-
-  .harry_header_icon {
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
-
-  .harry_header_icon img {
-    height: 48px;
-  }
-
-  .harry_header_icon {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    z-index: 102;
-  }
-
-  .harry_header_icon img {
-    height: 40px;
-    width: auto;
-    display: block;
-  }
-
-  /* Mobile menu toggle */
-  .mobile-menu-toggle {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    z-index: 102;
-  }
-
-  .mobile-menu-toggle span {
-    display: block;
-    width: 25px;
-    height: 3px;
-    background: white;
-    border-radius: 3px;
-    transition: all 0.3s ease;
-  }
-
-  .mobile-menu-toggle.active span:nth-child(1) {
-    transform: rotate(45deg) translate(7px, 7px);
-  }
-
-  .mobile-menu-toggle.active span:nth-child(2) {
-    opacity: 0;
-  }
-
-  .mobile-menu-toggle.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -7px);
-  }
-
-  /* Navigation links */
-  .nav-links {
-    display: flex;
     gap: 1.5rem;
-    align-items: center;
   }
 
   .nav-links a {
@@ -216,182 +145,89 @@ const { title = "My Website" } = Astro.props;
     text-decoration: none;
     font-weight: 500;
     white-space: nowrap;
-    transition: opacity 0.2s ease;
   }
 
   .nav-links a:hover {
-    opacity: 0.8;
     text-decoration: underline;
   }
 
-  /* Main content */
+  .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+  }
+
+  /* ================= MAIN ================= */
+
   main {
+    flex: 1 0 auto;
     width: 100%;
-    height: 80vh;
   }
 
-  /* Footer */
-footer {
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  /* background: black; */
-  color: white;
-  height: 10vh;              /* set footer height */
-  display: flex;
-  justify-content: center;   /* horizontally center sponsor-strip */
-  align-items: center;       /* vertically center sponsor-strip */
-  width: 100%;
-  border-top: 1px solid #ffffff;
-  flex-shrink: 0;            /* prevent footer from shrinking */
-}
-  .bottom-nav {
-    max-width: 1200px;
-    display: inline-flex;
+  /* ================= FOOTER ================= */
+
+  footer {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-top: 1px solid #ffffff;
+    color: white;
+
+    display: flex;
     justify-content: center;
-    gap: 1.5rem;
+    width: 100%;
+    min-height: 10vh;
+  }
+
+  .sponsor-strip {
+    display: flex;
     flex-wrap: wrap;
-  }
-
-  .social-link {
-    display: inline-flex;
-    align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #222;
-    color: #eee;
-    text-decoration: none;
-    transition: background 0.2s ease;
-  }
+    align-items: center;
 
-  .social-link:hover {
-    background: var(--accent);
-    color: #111;
-  }
-
-  .social-link svg {
-    width: 22px;
-    height: 22px;
-    fill: currentColor;
-  }
-
-.sponsor-strip {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;              /* fill the footer height */
-  width: 100%;
-  max-width: 1200px;         /* optional max width for large screens */
-  padding: 0 2rem;
-  gap: 2rem;
-}
-
-.sponsor-strip img {
-  height: 100%;              /* fill parent sponsor-strip height */
-  object-fit: contain;       /* preserve aspect ratio */
-  max-width: 150px;          /* optional: prevent logos from getting too wide */
-}
-
-  /* Tablet breakpoint */
-  @media (max-width: 900px) {
-    .nav-links {
-      gap: 1rem;
-    }
-
-    .nav-links a {
-      font-size: 0.9rem;
-    }
-      .sponsor-strip {
+    width: 100%;
+    max-width: 1200px;
     gap: 1rem;
-    padding: 0 1rem;
+    padding: 1rem 2rem;
   }
+
   .sponsor-strip img {
-    max-width: 100px;
-  }
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
   }
 
-  /* Mobile breakpoint */
+  /* ================= MOBILE ================= */
+
   @media (max-width: 768px) {
-    header {
-      padding: 1rem;
-    }
-
     .mobile-menu-toggle {
-      display: flex;
+      display: block;
     }
 
     .nav-links {
       position: fixed;
       top: 0;
       right: -100%;
-      width: 280px;
-      max-width: 80vw;
       height: 100vh;
+      width: 280px;
       background: var(--primary);
       flex-direction: column;
       justify-content: center;
       align-items: center;
       gap: 2rem;
       transition: right 0.3s ease;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
     }
 
     .nav-links.active {
       right: 0;
     }
-
-    .nav-links a {
-      font-size: 1.1rem;
-      padding: 0.5rem 1rem;
-    }
-
-    .harry_header_icon img {
-      height: 35px;
-    }
   }
 
-  /* Small mobile breakpoint */
   @media (max-width: 480px) {
-    .harry_header_icon img {
-      height: 30px;
-    }
-
-    .social-link {
+    .sponsor-strip img {
       width: 40px;
       height: 40px;
     }
-
-    .social-link svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .bottom-nav {
-      gap: 1rem;
-    }
-
-    .nav-right {
-      display: flex;
-      gap: 0.75rem;
-      padding-right: 1.5rem;
-    }
-
-    header .social-link {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    header .social-link:hover {
-      background: var(--accent);
-    }
-
-      .sponsor-strip {
-    flex-wrap: wrap;          /* wrap logos on very small screens */
-    justify-content: center;
-    gap: 0.75rem;
-  }
-  .sponsor-strip img {
-    max-width: 80px;
-  }
-
   }
 </style>
