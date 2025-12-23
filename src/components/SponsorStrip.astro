@@ -1,0 +1,61 @@
+---
+import anytimeFitnessLogo from "../assets/sponsors/Anytime-Fitness-logo.png"
+import davidBallarottoLogo from "../assets/sponsors/david-ballarotto.svg"
+import eightPointFinancialLogo from "../assets/sponsors/eightpoint-financial.svg"
+import northeasternIndustrialInsulationLogo from "../assets/sponsors/nei-logo.png"
+import whiteClawLogo from "../assets/sponsors/white-claw-hard-seltzer-logo-vector.svg"
+
+const images = [
+  anytimeFitnessLogo,
+  davidBallarottoLogo,
+  eightPointFinancialLogo,
+  northeasternIndustrialInsulationLogo,
+  whiteClawLogo
+];
+---
+<div class="sponsor-strip">
+  {images.map(img => (
+    <img src={img.src} alt="Sponsor logo" loading="lazy" />
+  ))}
+</div>
+
+<style>
+.sponsor-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;          /* fill the footer height dynamically */
+  width: 100%;
+  max-width: 1200px;     /* optional max width for large screens */
+  padding: 0 2rem;
+  gap: 2rem;
+}
+
+.sponsor-strip img {
+  max-width: 100px;      /* prevent images from being too wide */
+  /* background: white; */
+  /* margin: 1px; */
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .sponsor-strip {
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  .sponsor-strip img {
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sponsor-strip {
+    flex-wrap: wrap;      /* wrap logos on very small screens */
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .sponsor-strip img {
+    max-width: 80px;
+  }
+}
+</style>

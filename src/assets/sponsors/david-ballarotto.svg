@@ -4,31 +4,32 @@
   viewBox="0 0 300 300"
   xmlns="http://www.w3.org/2000/svg"
 >
-  <!-- Rounded square background -->
-  <rect
-    x="10"
-    y="10"
-    width="280"
-    height="280"
-    rx="32"
-    ry="32"
-    fill="#f7f9fc"
-    stroke="#2b2b2b"
-    stroke-width="3"
-  />
 
   <!-- Name text -->
   <text
     x="150"
-    y="150"
+    y="100"
     text-anchor="middle"
     dominant-baseline="middle"
     font-family="Poppins, Nunito, Quicksand, Arial, sans-serif"
-    font-size="28"
+    font-size="60"
     font-weight="600"
     fill="#1f2933"
     letter-spacing="0.5"
   >
-    David Ballarotto
+    David
+  </text>
+  <text
+    x="150"
+    y="200"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="Poppins, Nunito, Quicksand, Arial, sans-serif"
+    font-size="60"
+    font-weight="600"
+    fill="#1f2933"
+    letter-spacing="0.5"
+  >
+    Ballarotto
   </text>
 </svg>
