@@ -5,15 +5,24 @@ import davidBallarottoLogo from "../assets/sponsors/david-ballarotto.svg"
 import eightPointFinancialLogo from "../assets/sponsors/eightpoint-financial.svg"
 import northeasternIndustrialInsulationLogo from "../assets/sponsors/nei-logo.png"
 import whiteClawLogo from "../assets/sponsors/white-claw-hard-seltzer-logo-vector.svg"
-
+import lapianaChiropracticLogo from "../assets/sponsors/lapiana-chiropractic-logo.svg"
+import montuckyLogo from "../assets/sponsors/Montucky.svg"
+import redsGoodNewsLogo from "../assets/sponsors/reds-good-news.jpg";
+import pennBrewryIcon from "../assets/sponsors/penn-brewery-icon.png";
 
 const images = [
-{ src: anytimeFitnessLogo.src, alt: "Anytime-Fitness-Logo" },
-{ src: davidBallarottoLogo.src, alt: "David-Ballarotto-Logo" },
-{ src: eightPointFinancialLogo.src, alt: "Eightpoint-Financial-Logo" },
-{ src: northeasternIndustrialInsulationLogo.src, alt: "Northeastern-Industrial-Insulation-Logo" },
-{ src: whiteClawLogo.src, alt: "White-Claw-Logo" }
+  anytimeFitnessLogo,
+  davidBallarottoLogo,
+  eightPointFinancialLogo,
+  northeasternIndustrialInsulationLogo,
+  whiteClawLogo,
+  lapianaChiropracticLogo,
+  montuckyLogo,
+  redsGoodNewsLogo,
+  pennBrewryIcon
 ];
+
+
 ---
 <Layout>
 
@@ -27,7 +36,6 @@ const images = [
 <img src={image.src} alt={image.alt} loading="lazy" />
 </div>
 ))}
-
 </section>
 
 <section>

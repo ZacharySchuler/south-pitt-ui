@@ -28,8 +28,8 @@ const { title = "My Website" } = Astro.props;
             <a href="/about-us/">About Us</a>
             <a href="/join/">Becoming a Hooligan</a>
             <a href="/schedule/">Schedule</a>
-            <a href="/sponsors/">Sponsors</a>
             <a href="/culture/">Culture</a>
+            <a href = "sponsors/">Sponsors</a>
             <a href="/contact-us/">Contact Us</a>
           </div>
         </div>
@@ -100,7 +100,7 @@ const { title = "My Website" } = Astro.props;
 
     display: flex;
     flex-direction: column;
-    min-height: 100svh; /* mobile-safe viewport */
+    min-height: 100dvh;
   }
 
   /* ================= HEADER ================= */
@@ -163,7 +163,7 @@ const { title = "My Website" } = Astro.props;
   /* ================= MAIN ================= */
 
   main {
-    flex: 1 0 auto;
+    flex: 1;
     width: 100%;
   }
 
@@ -176,6 +176,7 @@ const { title = "My Website" } = Astro.props;
 
     display: flex;
     justify-content: center;
+    flex-shrink: 0;
     width: 100%;
     min-height: 10vh;
   }
