@@ -1,6 +1,199 @@
 ---
-import Layout from "../layouts/Layout.astro"
+import Layout from "../layouts/Layout.astro";
+import contactsData from "../data/contacts.json";
+import discordIcon from "../assets/social-media-icons/discord.svg";
+
+const { board } = contactsData;
+
+const scenarios = [
+  {
+    title: "Match scheduling",
+    description: "Coordinate fixtures, dates, and match logistics with our match staff.",
+    role: "Match Secretary",
+  },
+  {
+    title: "Sponsorship inquiries",
+    description: "Partner with South Pitt Rugby to support the club and community.",
+    role: "Treasurer",
+  },
+  {
+    title: "Youth rugby support",
+    description: "Bring South Pitt support to college or high school age teams.",
+    role: "Recruitment Coordinator",
+  },
+];
 ---
 <Layout>
-Contact Us
+  <section class="contact-page" aria-labelledby="contact-title">
+    <header class="contact-header">
+      <h1 id="contact-title">Contact South Pittsburgh Rugby</h1>
+    </header>
+
+    <div class="contact-grid">
+      {scenarios.map((scenario) => {
+        const contact = board?.[scenario.role];
+
+        return (
+          <article class="contact-card">
+            <h2>{scenario.title}</h2>
+            <p>{scenario.description}</p>
+            <div class="contact-role">
+              <h3>{scenario.role}</h3>
+              {contact ? (
+                <ul>
+                  <li>{contact.name}</li>
+                  {contact.phone && (
+                    <li>
+                      <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+                    </li>
+                  )}
+                  {contact.email && (
+                    <li>
+                      <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                    </li>
+                  )}
+                </ul>
+              ) : (
+                <p>Contact information is being updated.</p>
+              )}
+            </div>
+          </article>
+        );
+      })}
+      <article class="contact-card">
+        <h2>Join the team</h2>
+        <p>
+          Ready to play? Visit our join page for next steps or hop into our
+          Discord to introduce yourself.
+        </p>
+        <div class="contact-role">
+          <h3>Get started</h3>
+          <ul>
+            <li>
+              <a href="/join">Join South Pitt Rugby</a>
+            </li>
+            <li>
+              <a
+                href="https://discord.com/invite/HyA5YTWXp"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Join our Discord"
+                class="discord-link"
+              >
+                <img src={discordIcon.src} alt="" />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </article>
+      <article class="contact-card">
+        <h2>All other inquiries</h2>
+        <p>
+          For anything else, reach out and we will point you in the right
+          direction.
+        </p>
+        <div class="contact-role">
+          <h3>General contact</h3>
+          <ul>
+            <li>
+              <a href="mailto:hooligansrugby@gmail.com"
+                >hooligansrugby@gmail.com</a
+              >
+            </li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </section>
 </Layout>
+
+<style>
+  .contact-page {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 2.5rem 1rem 3rem;
+  }
+
+  .contact-header {
+    text-align: left;
+    margin-bottom: 2rem;
+  }
+
+  .contact-header h1 {
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-header p {
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .contact-card {
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fef7e6, #f8fafc);
+    box-shadow: 0 20px 35px rgba(15, 23, 42, 0.12);
+  }
+
+  .contact-card h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .contact-card p {
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+
+  .contact-role {
+    background: rgba(15, 23, 42, 0.05);
+    border-radius: 14px;
+    padding: 1rem;
+  }
+
+  .contact-role h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .contact-role ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.35rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .contact-role a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  .discord-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .discord-link img {
+    height: 24px;
+    width: 24px;
+    display: block;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+    padding: 4px;
+  }
+</style>

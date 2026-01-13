@@ -1,0 +1,66 @@
+{
+  "board": { 
+    "President": {
+      "name": "Colin Devlin",
+      "email": "colin.devlin@southpittrugby.com",
+      "phone": "412-555-0131"
+    },
+    "Vice President": {
+      "name": "Tara Mills",
+      "email": "tara.mills@southpittrugby.com",
+      "phone": "412-555-0184"
+    },
+    "Treasurer": {
+      "name": "Evan Wright",
+      "email": "evan.wright@southpittrugby.com",
+      "phone": "412-555-0167"
+    },
+    "Social Chairman": {
+      "name": "Marcos Reyes",
+      "email": "marcos.reyes@southpittrugby.com",
+      "phone": "412-555-0199"
+    },
+    "Match Secretary": {
+      "name": "Kris Kell",
+      "email": "kris.kell@southpittrugby.com",
+      "phone": "412-555-0112"
+    },
+    "Director of Rugby": {
+      "name": "Anthony Blake",
+      "email": "anthony.blake@southpittrugby.com",
+      "phone": "412-555-0143"
+    },
+    "Logistics Coordinator": {
+      "name": "Jenna Moore",
+      "email": "jenna.moore@southpittrugby.com",
+      "phone": "412-555-0128"
+    },
+    "Recruitment Coordinator": {
+      "name": "Sean Parker",
+      "email": "sean.parker@southpittrugby.com",
+      "phone": "412-555-0155"
+    },
+    "Communications Officer": {
+      "name": "Alyssa Grant",
+      "email": "alyssa.grant@southpittrugby.com",
+      "phone": "412-555-0176"
+    }
+  },
+  "coaches": {
+    "Division 2 Coach": {
+      "name": "Mike Donovan",
+      "email": "mike.donovan@southpittrugby.com",
+      "phone": "412-555-0201"
+    },
+    "Division 4 Coach": {
+      "name": "Ryan Walsh",
+      "email": "ryan.walsh@southpittrugby.com",
+      "phone": "412-555-0214"
+    },
+    "Strength & Conditioning": {
+      "name": "Kelsey Ortiz",
+      "email": "kelsey.ortiz@southpittrugby.com",
+      "phone": "412-555-0228"
+    }
+  }
+}

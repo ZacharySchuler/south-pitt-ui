@@ -1,5 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import aboutData from "../data/contacts.json";
+
+const { board, coaches } = aboutData;
 ---
 
 <Layout>
@@ -12,7 +15,7 @@ import Layout from "../layouts/Layout.astro";
         Pennsylvania through the development of rugby players of all skill
         level. The organization also aims to grow the game of Rugby Union by
         supporting events and matches at all levels. Built on community, refined
-        through compitetion, and united by a shared commitment to the traditions
+        through competition, and united by a shared commitment to the traditions
         of the game, the South Pitt Rugby Club is an essential
         part of the thriving Pittsburgh Rugby community.
       </p>
@@ -32,95 +35,31 @@ import Layout from "../layouts/Layout.astro";
 
         <h2>Executive Board</h2>
 
-        <div class="executive-board">
-          <section class="executive-role">
-            <h3>President - Colin Devlin </h3>
-            <ul>
-              <li>
-                Chief executive officer
-              </li>
-            </ul>
-          </section>
-          <section class="executive-role">
-            <h3>Vice President - TODO </h3>
-            <ul>
-              <li>
-                Supports the President and assumes their duties in their
-                absence
-              </li>
-            </ul>
-          </section>
-
-          <section class="executive-role">
-            <h3>Treasurer - TODO </h3>
-            <ul>
-              <li>
-                Manages Club finances, including budgeting, expense tracking,
-                and dues collection
-              </li>
-            </ul>
-          </section>
-
-          <section class="executive-role">
-            <h3>Social Chairman - TODO </h3>
-            <ul>
-              <li>
-                Plans and executes social events, post-match functions, 
-                fundraising activities, and community engagement
-              </li>
-            </ul>
-          </section>
-
-          <section class="executive-role">
-            <h3>Match Secretary - Kris Kell </h3>
-            <ul>
-              <li>
-                Coordinates match scheduling, referee assignments, league
-                communications, and match reporting
-              </li>
-            </ul>
-          </section>
-
-          <section class="executive-role">
-            <h3>Director of Rugby - TODO </h3>
-            <ul>
-              <li>
-                Oversees coaching staff, player selection, and development
-                strategy
-              </li>
-            </ul>
-          </section>
-          <section class="executive-role">
-            <h3>Logistics Coordinator - TODO</h3>
-            <ul>
-              <li>
-                Manages operational needs for practices, matches, and events.
-              </li>
-            </ul>
-          </section>
-
-          <section class="executive-role">
-            <h3>Recruitment Coordinator - TODO</h3>
-            <ul>
-              <li>Leads player and supporter recruitment initiatives through outreach with local colleges, alumni, and community
-                programs </li>
-            </ul>
-          </section>
-
-          <section class="executive-role">
-            <h3>Communications Officer - TODO</h3>
-            <ul>
-              <li>
-                Manages the Club's social media, website, and digital
-                communications.
-              </li>
-            </ul>
-          </section>
+        <!-- TODO Make the JSON Correct  -->
+        <div class="executive-board"> 
+          {Object.entries(board).map(([position, member]) => (
+            <section class="executive-role">
+              <h3>{position} - {member.name}</h3>
+              <ul>
+                {member.email && (
+                  <li>
+                    <a href={`mailto:${member.email}`}>{member.email}</a>
+                  </li>
+                )}
+                {member.phone && (
+                  <li>
+                    <a href={`tel:${member.phone}`}>{member.phone}</a>
+                  </li>
+                )}
+              </ul>
+            </section>
+          ))}
         </div>
       </article>
 
-      <article class="about-column">
-        <h1>The Team</h1>
+      <div class="about-stack">
+        <article class="about-column">
+          <h1>The Team</h1>
 
         <p>
           The South Pittsburgh Rugby Club also fields Mens Teams for the <a
@@ -152,13 +91,34 @@ import Layout from "../layouts/Layout.astro";
         </p>
           <p>For years like 2024, where the team wins their league, the Spring Season is spent preparing for Championship-level games as they occur during the spring months. </p>
         
-          <h2> Coaching Staff</h2>
-          <ul>
-            <li> Division 2 Coach - TODO</li>
-            <li>Division 4 Coach - TODO </li>
-            <li> ANY_OTHERS_TO_INCLUDE_TODO</li>
-          </ul>
-      </article>
+        </article>
+
+        <article class="about-column coaching-staff">
+          <h1>Coaching Staff</h1>
+          <p>
+            Our coaches keep the squad sharp, accountable, and progressing through each season.
+          </p>
+          <div class="executive-board">
+            {Object.entries(coaches).map(([position, coach]) => (
+              <section class="executive-role">
+              <h3>{position} - {coach.name}</h3>
+              <ul>
+                {coach.email && (
+                  <li>
+                    <a href={`mailto:${coach.email}`}>{coach.email}</a>
+                  </li>
+                )}
+                {coach.phone && (
+                  <li>
+                    <a href={`tel:${coach.phone}`}>{coach.phone}</a>
+                  </li>
+                )}
+              </ul>
+            </section>
+          ))}
+        </div>
+        </article>
+      </div>
     </div>
   </section>
 </Layout>
@@ -219,6 +179,12 @@ import Layout from "../layouts/Layout.astro";
   .about-columns {
     display: grid;
     grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .about-stack {
+    display: grid;
     gap: 2rem;
   }
 
