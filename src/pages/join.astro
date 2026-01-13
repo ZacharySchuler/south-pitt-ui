@@ -1,6 +1,229 @@
 ---
-import Layout from "../layouts/Layout.astro"
+import Layout from "../layouts/Layout.astro";
+import practiceData from "../data/practice.json";
+
+const {
+  location,
+  Time: time,
+  "Location Address": locationAddress,
+  "Days of Week": days,
+} = practiceData;
 ---
-<Layout>
-Join
+<Layout title="Join South Pittsburgh Rugby">
+  <section class="join-page" aria-labelledby="join-title">
+    <header class="join-hero">
+      <h1 id="join-title">Join South Pittsburgh Rugby</h1>
+      <p>
+        Whether you are brand new to rugby or a seasoned player looking for a
+        new home, you are welcome here. We care just as much about your growth
+        and confidence as we do about the scoreline, and our practices are built
+        to meet you where you are.
+      </p>
+      <p>
+        You do not need experience to start. Show up ready to learn, and our
+        coaches and leaders will guide you through the basics alongside players
+        who remember what it felt like to be new.
+      </p>
+    </header>
+
+    <section class="join-section" aria-labelledby="ready-title">
+      <div class="section-title">
+        <h2 id="ready-title">Ready to Dive in</h2>
+        <p>Here is everything you need to know before your first practice.</p>
+      </div>
+
+      <div class="info-grid">
+        <article class="info-card">
+          <h3>Practice location and times</h3>
+          <p class="practice-location">{location}</p>
+          <p>{locationAddress}</p>
+          <ul class="practice-details">
+            <li>
+              <span class="label">Days</span>
+              {days.join(" & ")}
+            </li>
+            <li>
+              <span class="label">Time</span>
+              {time}
+            </li>
+          </ul>
+        </article>
+
+        <article class="info-card">
+          <h3>What to bring</h3>
+          <ul class="checklist">
+            <li>Water</li>
+            <li>Clothes you don't care about</li>
+            <li>Cleats (If you have them)</li>
+            <li>Mouthguard (If you have it - not needed most practices)</li>
+            <li>Layers depending on whether.</li>
+          </ul>
+        </article>
+
+        <article class="info-card">
+          <h3>What to expect</h3>
+          <ul class="checklist">
+            <li>A quick welcome and introductions with the squad.</li>
+            <li>Skills-focused drills that scale to your comfort level.</li>
+            <li>A bit of Conditioning </li>
+            <li>Position specific skills: Forwards and Backs specifics</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="join-section join-convince" aria-labelledby="convince-title">
+      <div class="section-title">
+        <h2 id="convince-title">Need some convincing</h2>
+        <p>
+          Interested but not fully ready to jump in? Feel free to come watch a practice or game to see what rugby is all about.
+        </p>
+        <p>
+          Come meet the people who make this club special. Drop into our
+          Discord, say hello, and see if South Pitt Rugby feels like your next
+          team.
+        </p>
+      </div>
+
+      <a
+        class="discord-cta"
+        href="https://discord.com/invite/HyA5YTWXp"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Join the South Pitt Rugby Discord
+      </a>
+    </section>
+  </section>
 </Layout>
+
+<style>
+  .join-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 1rem 3.5rem;
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .join-hero {
+    background: linear-gradient(135deg, rgba(31, 60, 136, 0.12), rgba(212, 175, 55, 0.18));
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 24px 45px rgba(15, 23, 42, 0.12);
+  }
+
+  .join-hero h1 {
+    font-size: clamp(2rem, 3.2vw, 2.8rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .join-hero p {
+    max-width: 720px;
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .join-section {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .section-title h2 {
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title p {
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .info-card {
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    padding: 1.5rem;
+    background: #ffffff;
+    box-shadow: 0 20px 35px rgba(15, 23, 42, 0.1);
+  }
+
+  .info-card h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+  }
+
+  .practice-location {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .practice-details {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .label {
+    display: inline-block;
+    font-weight: 600;
+    margin-right: 0.35rem;
+  }
+
+  .checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .checklist li::before {
+    content: "-";
+    color: #1f3c88;
+    font-weight: 700;
+    display: inline-block;
+    width: 1rem;
+  }
+
+  .join-convince {
+    background: linear-gradient(120deg, rgba(212, 175, 55, 0.18), rgba(31, 60, 136, 0.12));
+    padding: 2rem;
+    border-radius: 20px;
+    border: 1px solid rgba(31, 60, 136, 0.12);
+    box-shadow: 0 20px 35px rgba(15, 23, 42, 0.12);
+  }
+
+  .discord-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    background: #1f3c88;
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+
+  .discord-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(31, 60, 136, 0.25);
+  }
+
+  @media (max-width: 600px) {
+    .join-hero,
+    .join-convince {
+      padding: 1.5rem;
+    }
+  }
+</style>
