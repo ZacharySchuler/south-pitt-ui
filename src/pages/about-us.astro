@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import aboutData from "../data/about-us.json";
+import aboutData from "../data/contacts.json";
 
 const { board, coaches } = aboutData;
 ---
@@ -35,25 +35,31 @@ const { board, coaches } = aboutData;
 
         <h2>Executive Board</h2>
 
-        <div class="executive-board">
+        <!-- TODO Make the JSON Correct  -->
+        <div class="executive-board"> 
           {Object.entries(board).map(([position, member]) => (
             <section class="executive-role">
               <h3>{position} - {member.name}</h3>
               <ul>
-                <li>
-                  <a href={`mailto:${member.email}`}>{member.email}</a>
-                </li>
-                <li>
-                  <a href={`tel:${member.phone}`}>{member.phone}</a>
-                </li>
+                {member.email && (
+                  <li>
+                    <a href={`mailto:${member.email}`}>{member.email}</a>
+                  </li>
+                )}
+                {member.phone && (
+                  <li>
+                    <a href={`tel:${member.phone}`}>{member.phone}</a>
+                  </li>
+                )}
               </ul>
             </section>
           ))}
         </div>
       </article>
 
-      <article class="about-column">
-        <h1>The Team</h1>
+      <div class="about-stack">
+        <article class="about-column">
+          <h1>The Team</h1>
 
         <p>
           The South Pittsburgh Rugby Club also fields Mens Teams for the <a
@@ -85,24 +91,34 @@ const { board, coaches } = aboutData;
         </p>
           <p>For years like 2024, where the team wins their league, the Spring Season is spent preparing for Championship-level games as they occur during the spring months. </p>
         
-      </article>
+        </article>
 
-      <article class="about-column">
-        <h1>Coaching Staff</h1>
-        <p>
-          Our coaches keep the squad sharp, accountable, and progressing through each season.
-        </p>
-        <ul>
-          {Object.entries(coaches).map(([position, coach]) => (
-            <li>
-              {position} - {coach.name} (
-              <a href={`mailto:${coach.email}`}>{coach.email}</a>,{" "}
-              <a href={`tel:${coach.phone}`}>{coach.phone}</a>
-              )
-            </li>
+        <article class="about-column coaching-staff">
+          <h1>Coaching Staff</h1>
+          <p>
+            Our coaches keep the squad sharp, accountable, and progressing through each season.
+          </p>
+          <div class="executive-board">
+            {Object.entries(coaches).map(([position, coach]) => (
+              <section class="executive-role">
+              <h3>{position} - {coach.name}</h3>
+              <ul>
+                {coach.email && (
+                  <li>
+                    <a href={`mailto:${coach.email}`}>{coach.email}</a>
+                  </li>
+                )}
+                {coach.phone && (
+                  <li>
+                    <a href={`tel:${coach.phone}`}>{coach.phone}</a>
+                  </li>
+                )}
+              </ul>
+            </section>
           ))}
-        </ul>
-      </article>
+        </div>
+        </article>
+      </div>
     </div>
   </section>
 </Layout>
@@ -163,6 +179,12 @@ const { board, coaches } = aboutData;
   .about-columns {
     display: grid;
     grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .about-stack {
+    display: grid;
     gap: 2rem;
   }
 
