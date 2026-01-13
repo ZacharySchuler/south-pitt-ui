@@ -3,7 +3,13 @@ import SocialMediaStrip from "../components/SocialMediaStrip.astro"
 import Layout from "../layouts/Layout.astro"
 import diveDayImage from "../assets/dive-day-2025.jpg"
 import winterDinnerChamps from "../assets/winter-dinner-champs.jpg"
-import winterDinnerOldheads from "../assets/oldheads-winter-dinner.jpg"
+import practiceDetails from "../data/practice.json";
+
+const {
+  location,
+  Time: time,
+  "Days of Week": days,
+} = practiceDetails;
 ---
 <Layout>
   <section class="culture-page" aria-labelledby="culture-title">
@@ -26,8 +32,8 @@ import winterDinnerOldheads from "../assets/oldheads-winter-dinner.jpg"
           development, conditioning, and tactical work so that every player
           levels up together.
         </p>
-        <p>
-        Practices occur twice a week at Moore Park, typically from 7 PM and 9 PM. Everyone is welcome regardless of skill level!
+        <p id = "practice-details">
+          The team typically practices at {location} on {days.join(" and ")} from {time}.
         </p>
       </article>
 
