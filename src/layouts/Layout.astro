@@ -3,7 +3,13 @@
 import harry_icon from "../assets/harry.svg";
 import SponsorStrip from "../components/SponsorStrip.astro";
 
-const { title = "South Pitt Rugby" } = Astro.props;
+const {
+  title = "South Pitt Rugby",
+  description = "South Pittsburgh Rugby Football Club builds community and competition for players of every skill level in Southwestern Pennsylvania.",
+} = Astro.props;
+const siteUrl = Astro.site ?? Astro.url;
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const socialImageUrl = new URL(harry_icon.src, siteUrl).toString();
 ---
 
 <!doctype html>
@@ -12,6 +18,19 @@ const { title = "South Pitt Rugby" } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:site_name" content="South Pittsburgh Rugby" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content="South Pitt Rugby crest" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
   </head>
 
   <body>
