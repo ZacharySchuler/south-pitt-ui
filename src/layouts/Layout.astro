@@ -3,7 +3,13 @@
 import harry_icon from "../assets/harry.svg";
 import SponsorStrip from "../components/SponsorStrip.astro";
 
-const { title = "My Website" } = Astro.props;
+const {
+  title = "South Pitt Rugby",
+  description = "South Pittsburgh Rugby Football Club builds community and competition for players of every skill level in Southwestern Pennsylvania.",
+} = Astro.props;
+const siteUrl = Astro.site ?? Astro.url;
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const socialImageUrl = new URL(harry_icon.src, siteUrl).toString();
 ---
 
 <!doctype html>
@@ -12,6 +18,19 @@ const { title = "My Website" } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:site_name" content="South Pittsburgh Rugby" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content="South Pitt Rugby crest" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
   </head>
 
   <body>
@@ -24,17 +43,22 @@ const { title = "My Website" } = Astro.props;
         </div>
 
         <div class="nav-center">
-          <div class="nav-links">
+          <div class="nav-links" aria-hidden="true">
+            <button class="mobile-menu-close" type="button" aria-label="Close menu">
+              ✕
+            </button>
             <a href="/about-us/">About Us</a>
             <a href="/join/">Becoming a Hooligan</a>
             <!-- <a href="/schedule/">Schedule</a> -->
             <a href="/culture/">Culture</a>
-            <!-- <a href = "sponsors/">Sponsors</a> -->
+            <a href = "sponsors/">Sponsors</a>
             <a href="/contact-us/">Contact Us</a>
           </div>
         </div>
 
-        <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          ☰
+        </button>
       </nav>
     </header>
 
@@ -49,24 +73,33 @@ const { title = "My Website" } = Astro.props;
     <script>
       const toggle = document.querySelector(".mobile-menu-toggle");
       const navLinks = document.querySelector(".nav-links");
+      const closeButton = document.querySelector(".mobile-menu-close");
+
+      const setMenuState = (isOpen) => {
+        navLinks?.classList.toggle("active", isOpen);
+        navLinks?.setAttribute("aria-hidden", String(!isOpen));
+        toggle?.setAttribute("aria-expanded", String(isOpen));
+        document.body.style.overflow = isOpen ? "hidden" : "";
+      };
 
       toggle?.addEventListener("click", () => {
-        const isOpen = navLinks.classList.toggle("active");
-        toggle.setAttribute("aria-expanded", String(isOpen));
-        document.body.style.overflow = isOpen ? "hidden" : "";
+        const isOpen = !navLinks?.classList.contains("active");
+        setMenuState(isOpen);
+      });
+
+      closeButton?.addEventListener("click", () => {
+        setMenuState(false);
       });
 
       navLinks?.querySelectorAll("a").forEach((link) => {
         link.addEventListener("click", () => {
-          navLinks.classList.remove("active");
-          document.body.style.overflow = "";
+          setMenuState(false);
         });
       });
 
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
-          navLinks?.classList.remove("active");
-          document.body.style.overflow = "";
+          setMenuState(false);
         }
       });
     </script>
@@ -160,6 +193,15 @@ const { title = "My Website" } = Astro.props;
     cursor: pointer;
   }
 
+  .mobile-menu-close {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    color: white;
+    cursor: pointer;
+  }
+
   /* ================= MAIN ================= */
 
   main {
@@ -222,6 +264,13 @@ const { title = "My Website" } = Astro.props;
 
     .nav-links.active {
       right: 0;
+    }
+
+    .mobile-menu-close {
+      display: block;
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
     }
   }
 

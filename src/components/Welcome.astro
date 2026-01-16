@@ -6,18 +6,16 @@ import team1 from "../assets/team-pic-1.jpg";
 import winterDinnerChamps from "../assets/winter-dinner-champs.jpg";
 import SocialMediaStrip from "./SocialMediaStrip.astro";
 
-import facebookIcon from "../assets/social-media-icons/facebook_icon.svg";
-import instagramIcon from "../assets/social-media-icons/Instagram_icon.svg";
-import xIcon from "../assets/social-media-icons/x-icon.webp";
 ---
 
 <section class="hero">
-  <div class="images">
+  <div class="images images-desktop">
     <Image
       src={team1}
       alt="Rugby team group photo"
       class="side-image"
       loading="eager"
+      fetchpriority="high"
     />
 
     <Image
@@ -25,6 +23,8 @@ import xIcon from "../assets/social-media-icons/x-icon.webp";
       alt="Rugby team celebrating championship victory"
       class="center-image"
       loading="eager"
+      fetchpriority="high"
+      sizes="(max-width: 900px) 100vw, 40vw"
     />
 
     <Image
@@ -32,6 +32,19 @@ import xIcon from "../assets/social-media-icons/x-icon.webp";
       alt="Rugby team supporters and players"
       class="side-image"
       loading="eager"
+      fetchpriority="high"
+      sizes="(max-width: 900px) 100vw, 30vw"
+    />
+  </div>
+
+  <div class="images images-mobile">
+    <Image
+      src={champs}
+      alt="Rugby team celebrating championship victory"
+      class="mobile-image"
+      loading="eager"
+      fetchpriority="high"
+      sizes="100vw"
     />
   </div>
 
@@ -69,8 +82,18 @@ import xIcon from "../assets/social-media-icons/x-icon.webp";
     height: 100%;
   }
 
+  .images-mobile {
+    display: none;
+  }
+
   .side-image,
   .center-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -162,8 +185,13 @@ import xIcon from "../assets/social-media-icons/x-icon.webp";
 
   /* Mobile */
   @media (max-width: 900px) {
-    .images {
-      grid-template-columns: 1fr;
+    .images-desktop {
+      display: none;
+    }
+
+    .images-mobile {
+      display: block;
+      height: 100%;
     }
 
     .side-image {
