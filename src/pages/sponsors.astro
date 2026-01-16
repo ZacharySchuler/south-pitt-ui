@@ -10,6 +10,8 @@ import montuckyLogo from "../assets/sponsors/Montucky.svg"
 import redsGoodNewsLogo from "../assets/sponsors/reds-good-news.jpg";
 import pennBrewryIcon from "../assets/sponsors/penn-brewery-icon.png";
 
+import aboutData from "../data/contacts.json";
+
 const images = [
   anytimeFitnessLogo,
   davidBallarottoLogo,
@@ -22,13 +24,23 @@ const images = [
   pennBrewryIcon
 ];
 
+const { board, coaches } = aboutData;
 
 ---
 <Layout>
 
 <!DOCTYPE html>
 <main>
+
+<section>
+<h1> Interested in Sponsoring the Team?</h1>
+
+For sponsorship inquiries, please contact our Treasurer: <a href={`mailto:${board.Treasurer.email}`}>{board.Treasurer.name}</a>
+</section>
+
 <h1>Team Sponsors</h1>
+
+
 
 <section class="grid">
 {images.map((image) => (
@@ -38,11 +50,6 @@ const images = [
 ))}
 </section>
 
-<section>
-<h1> Interested in Sponoring the Team?</h1>
-
-For sponsorship inquiries, please contact TODO: INSERT CONTACT
-</section>
 </main>
 
 
