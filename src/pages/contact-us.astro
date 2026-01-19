@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import discordIcon from "../assets/social-media-icons/discord.svg";
-import SocialMediaStrip from "../components/SocialMediaStrip.astro";
+import ContactComponent from "../components/ContactComponent.astro";
 
 ---
 <Layout>
@@ -18,21 +18,7 @@ import SocialMediaStrip from "../components/SocialMediaStrip.astro";
           <a class="button primary" href="mailto:hooligansrugby@gmail.com">Email the club</a>
         </div>
       </div>
-      <aside class="hero-panel" aria-label="Social channels and quick contact">
-        <h2>Social channels</h2>
-        <p>
-          Tap a platform to reach the team. We monitor these for game logistics,
-          sponsorship, and community support.
-        </p>
-        <div class="social-strip">
-          <SocialMediaStrip
-          discord={false} />
-        </div>
-        <div class="hero-email">
-          <span>Email</span>
-          <a href="mailto:hooligansrugby@gmail.com">hooligansrugby@gmail.com</a>
-        </div>
-      </aside>
+      <ContactComponent/>
     </header>
 
     <div class="contact-grid">
@@ -176,49 +162,9 @@ import SocialMediaStrip from "../components/SocialMediaStrip.astro";
     box-shadow: 0 18px 35px rgba(0, 0, 0, 0.3);
   }
 
-  .hero-panel {
-    background: var(--panel);
-    border-radius: 22px;
-    padding: 1.75rem;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
-    display: grid;
-    gap: 1rem;
-  }
 
-  .hero-panel h2 {
-    font-size: 1.3rem;
-    font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
-  }
 
-  .hero-panel p {
-    line-height: 1.6;
-  }
-
-  .social-strip {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 14px;
-    padding: 0.5rem;
-  }
-
-  .hero-email {
-    display: grid;
-    gap: 0.25rem;
-    font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
-  }
-
-  .hero-email span {
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    color: rgba(17, 20, 26, 0.6);
-  }
-
-  .hero-email a {
-    color: #11141a;
-    text-decoration: underline;
-  }
-
+  
   .contact-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
