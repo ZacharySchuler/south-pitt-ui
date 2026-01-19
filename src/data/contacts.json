@@ -29,5 +29,11 @@
     "Forward Coach": {
       "name": "Mike Lane"
     }
+  },
+  "socials": {
+    "facebook": "https://www.facebook.com/SouthPittRugby/",
+    "instagram": "https://www.instagram.com/hooligansrfc/?hl=en",
+    "X": "https://twitter.com/HooligansRugby",
+    "email": "mailto:hooligansrugby@gmail.com"
   }
 }
