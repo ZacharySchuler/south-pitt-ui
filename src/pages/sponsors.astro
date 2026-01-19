@@ -9,6 +9,7 @@ import lapianaChiropracticLogo from "../assets/sponsors/lapiana-chiropractic-log
 import montuckyLogo from "../assets/sponsors/Montucky.svg"
 import redsGoodNewsLogo from "../assets/sponsors/reds-good-news.jpg";
 import pennBrewryIcon from "../assets/sponsors/penn-brewery-icon.png";
+import ContactComponent from "../components/ContactComponent.astro"
 
 import aboutData from "../data/contacts.json";
 
@@ -35,7 +36,7 @@ const { board, coaches } = aboutData;
 <section>
 <h1> Interested in Sponsoring the Team?</h1>
 
-For sponsorship inquiries, please contact our Treasurer: <a href={`mailto:${board.Treasurer.email}`}>{board.Treasurer.name}</a>
+<ContactComponent/>
 </section>
 
 <h1>Team Sponsors</h1>
