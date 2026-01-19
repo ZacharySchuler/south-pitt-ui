@@ -1,13 +1,17 @@
-# Branching Strategy:
+# Contributing: (For Other South Pitt people):
 
-## Production Branche:
+- board/coaching info is in `data/contact.json` -> update this to have it reflected on all pages its referenced
+- practice info is located in `data/practice.json`. Update this to have it reflected on all places its referenced
+
+## Branching Strategy:
+
+### Production Branche:
 
 - master -> the main production branch - auto-deploys to southpittrugby.com
-
-## Non Prod branches:
+### Non Prod branches:
 - dev-main -> the WIP branch - to be merged into master when feature sets are finalized -> deployed to dev-main-south-pitt-ui.zrschu.workers.dev
 
-- <$INSERT_BRANCH_NAME_HERE> -> any feature branch - to be merged into dev-main -> deployed to $<INSERT_BRANCH_NAME_HERE>-south-pitt-ui.zrschu.workers.dev
+- any-regular-branch -> any feature branch - to be merged into dev-main -> deployed to <branch_name>-south-pitt-ui.zrschu.workers.dev
 
 
 # Deployment:
@@ -46,16 +50,13 @@ All commands are run from the root of the project, from a terminal:
 
 
 
+# Repo Explanation
+This is currently a standard static astro site - meaning that the website is built before being deployed with no dynamic data being fetched.
 
-## Explaination of the repo:
-TODO
-
-
-## What still needs done?
-[] Landing page 
-[] About Us page
-[] becoming a Hooligan
-[] Schedule
-[x] Sponsors - Need to add Contact
-[] Culture
-[] Contact Us
+It follows a standard astro directory structure of:
+- assets: pictures
+- components: reuseable components
+- data: static data, used for ease of editing
+- layouts: Contains layouts used to wrap main page contents
+- pages: content pages, each page represent a url (e.g. culture.astro represents /culture/ on the website)
+  
