@@ -3,10 +3,17 @@ import facebookIcon from '../assets/social-media-icons/facebook_icon.svg';
 import instagramIcon from '../assets/social-media-icons/Instagram_icon.svg';
 import xIcon from '../assets/social-media-icons/x-icon.webp';
 import discordIcon from "../assets/social-media-icons/discord.svg";
+
+
+//Defaulting facebook, instagram and x to true. 
+// The whole reason for props is because the discord is kinda secretive and we don't want to have it everywhere
+const { facebook = true, instagram = true, x = true, discord=false } = Astro.props; // Provide a default value
+
 ---
 
+
 <div class="social-media-strip">
-  <div id="social-icon">
+  {facebook && <div id="social-icon">
     <a
       class="social-link"
       href="https://www.facebook.com/SouthPittRugby/"
@@ -16,8 +23,8 @@ import discordIcon from "../assets/social-media-icons/discord.svg";
     >
       <img src={facebookIcon.src}/>
     </a>
-  </div>
-  <div id="social-icon">
+  </div> }
+  {instagram  && <div id="social-icon">
     <a
       class="social-link"
       href="https://www.instagram.com/hooligansrfc/?hl=en"
@@ -27,8 +34,8 @@ import discordIcon from "../assets/social-media-icons/discord.svg";
     >
       <img src={instagramIcon.src}/> 
     </a>
-  </div>
-  <div id="social-icon">
+  </div>}
+  {x && <div id="social-icon">
     <a
       class="social-link"
       href="https://twitter.com/HooligansRugby"
@@ -38,8 +45,8 @@ import discordIcon from "../assets/social-media-icons/discord.svg";
     >
       <img src = {xIcon.src}/>
     </a>
-  </div>
-  <div id="social-icon">
+  </div>}
+  {discord && <div id="social-icon">
     <a
       class="social-link"
       href="https://discord.com/invite/HyA5YTWXp"
@@ -49,7 +56,7 @@ import discordIcon from "../assets/social-media-icons/discord.svg";
     >
       <img id="discord"  src = {discordIcon.src}/>
     </a>
-  </div>
+  </div>}
 </div>
 
 <style>
