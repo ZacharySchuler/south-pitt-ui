@@ -1,0 +1,39 @@
+{
+  "board": { 
+    "President": {
+      "name": "Colin Devlin"
+    },
+    "Vice President": {
+      "name": "Jakob Como"
+    },
+    "Treasurer": {
+      "name": "Brandon Phan"
+    },
+    "Social Chairman": {
+      "name": "Jared Slattery"
+    },
+    "Match Secretary":{
+      "name": "Kris Kell"
+    },
+    "Director of Rugby" : {
+      "name": "Matt \"Red\" Gribowicz"
+    }
+  },
+  "coaches": {
+     "Director of Rugby / D2 Coach": {
+      "name": "Matt \"Red\" Gribowicz"
+    },
+    "D4 Coach":{
+      "name": "Jakob Como"
+    },
+    "Forward Coach": {
+      "name": "Mike Lane"
+    }
+  },
+  "socials": {
+    "facebook": "https://www.facebook.com/SouthPittRugby/",
+    "instagram": "https://www.instagram.com/hooligansrfc/?hl=en",
+    "X": "https://twitter.com/HooligansRugby",
+    "email": "mailto:hooligansrugby@gmail.com"
+  }
+}

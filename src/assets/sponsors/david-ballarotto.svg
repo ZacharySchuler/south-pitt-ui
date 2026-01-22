@@ -1,0 +1,35 @@
+<svg
+  width="300"
+  height="300"
+  viewBox="0 0 300 300"
+  xmlns="http://www.w3.org/2000/svg"
+>
+
+  <!-- Name text -->
+  <text
+    x="150"
+    y="100"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="Poppins, Nunito, Quicksand, Arial, sans-serif"
+    font-size="60"
+    font-weight="600"
+    fill="#1f2933"
+    letter-spacing="0.5"
+  >
+    David
+  </text>
+  <text
+    x="150"
+    y="200"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="Poppins, Nunito, Quicksand, Arial, sans-serif"
+    font-size="60"
+    font-weight="600"
+    fill="#1f2933"
+    letter-spacing="0.5"
+  >
+    Ballarotto
+  </text>
+</svg>

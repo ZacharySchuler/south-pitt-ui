@@ -1,0 +1,426 @@
+---
+import SocialMediaStrip from "../components/SocialMediaStrip.astro"
+import Layout from "../layouts/Layout.astro"
+import diveDayImage from "../assets/dive-day-2025.jpg"
+import winterDinnerChamps from "../assets/winter-dinner-champs.jpg"
+import practiceDetails from "../data/practice.json";
+
+const {
+  location,
+  Time: time,
+  "Days of Week": days,
+} = practiceDetails;
+---
+<Layout>
+  <section class="culture-page" aria-labelledby="culture-title">
+    <!-- <header class="culture-hero">
+      <div class="culture-hero-text">
+        <p class="eyebrow">South Pittsburgh Rugby Football Club</p>
+        <h1 id="culture-title">Culture Built on Hard Work, Community, and Playing Until the Whistle</h1>
+        <p class="culture-intro">
+          South Pitt is more than a way to kill a Saturday afternoon. We are a rugby team built around self-improvement, playing with pride, and celebrating the game with the
+          people who make it feel like home.
+        </p>
+      </div>
+    </header> -->
+
+    <div class="culture-grid">
+      <article class="culture-panel">
+        <h2>Training</h2>
+        <p>
+          We bring intensity to every session. Practices blend skill
+          development, conditioning, and tactical work so that every player
+          levels up together.
+        </p>
+        <p id = "practice-details">
+          The team typically practices at {location} on {days.join(" and ")} from {time}.
+        </p>
+      </article>
+
+      <article class="culture-panel">
+        <h2>Travel</h2>
+        <p>
+          Depending on the conference, the team travels across the midwest for regular season games away games.
+        </p>
+        <p>
+          The team also attends various tournaments during the Spring.
+        </p>
+      </article>
+
+      <article class="culture-panel">
+        <h2>Giving Back</h2>
+        <p>
+          The team supports causes such as the Special Olympics, which we raise money for with the Polar Plunge.
+        </p>
+      </article>
+    </div>
+
+    <section class="events" aria-labelledby="events-title">
+      <div class="events-header">
+        <h2 class="event-overview">Annual Events and Traditions</h2>
+        <p class = "event-overview">
+        Our calendar is stacked with the traditions that keep the team together off the field.
+        Here is the yearly rhythm that keeps South Pitt connected.
+        </p>
+      </div>
+
+      <div class="events-grid">
+        <article class="event-card featured winter-dinner">
+          <figure>
+            <img src={diveDayImage.src} alt="South Pitt players celebrating during Dive Day bar crawl." />
+          </figure>
+          <div class="event-body">
+            <p class="event-date">December</p>
+            <h3>Dive Day</h3>
+            <p>
+            A South Side bar crawl with a strict schedule and a badge of honor for those that make it to the end.
+            Dive Day is a true South Pitt rite of
+            passage.
+            </p>
+          </div>
+        </article>
+
+        <article class="event-card">
+          <div class="event-body">
+            <p class="event-date">June</p>
+            <h3>Half Way to Dive Day</h3>
+            <p>
+              The mid-year bar crawl through Brookline and Dormont. Like its name suggests, it acts as a warm-up for Dive Day and a chance to get together during the summer.
+            </p>
+          </div>
+        </article>
+
+        <article class="event-card">
+          <div class="event-body">
+            <p class="event-date">February</p>
+            <h3>The Polar Plunge</h3>
+            <p>
+              A charity cold plunge for the Special Olympics. Players raise money and
+              brave the cold together.
+            </p>
+          </div>
+        </article>
+
+        <article class="event-card">
+          <div class="event-body">
+            <p class="event-date">Summer</p>
+            <h3>7s Tournaments</h3>
+            <p>
+              Weekend travel, fast rugby, and long days in the tri-state area.
+              Summer 7s keep our speed sharp and our crew close.
+            </p>
+
+            <p>
+              We typically field a "Husky Boys" team for those that care more about the social than the results.
+            </p>
+          </div>
+        </article>
+
+        <article class="event-card">
+          <div class="event-body">
+            <p class="event-date">Spring</p>
+            <h3>Touring Games</h3>
+            <p>
+              We travel to tournaments and rugby gatherings across the region,
+              building connections with clubs and bringing the South Pitt
+              spirit wherever we land.
+            </p>
+          </div>
+        </article>
+
+        <article class="event-card featured winter-dinner">
+          <div class="winter-dinner-grid">
+            <figure>
+              <img
+                src={winterDinnerChamps.src}
+                alt="South Pitt members dressed up for the Winter Dinner awards night."
+              />
+            </figure>
+
+          </div>
+          <div class="event-body">
+            <p class="event-date">Winter</p>
+            <h3>Winter Dinner</h3>
+            <p>
+              Our season review dinner blends a theme, awards, and plenty of
+              drinks. It is where we celebrate the grind and honor the people
+              who made the year memorable.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="culture-cta">
+      <div>
+        <h2>Ready to be part of it?</h2>
+        <p>
+          See our <a href="/join/">Becoming a Hooligan</a> page for more information on joining! Come to a training session, jump into an event, or follow along on
+          social for the next South Pitt story.
+        </p>
+      </div>
+      <SocialMediaStrip discord={true} />
+    </section>
+  </section>
+</Layout>
+
+<style>
+  .culture-page {
+    --accent: #d4af37;
+    --accent-deep: #1f3c88;
+    --ink: #f7f3ea;
+    --panel: rgba(12, 22, 50, 0.8);
+    --panel-border: rgba(212, 175, 55, 0.35);
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 2.5rem 1rem 3rem;
+    color: var(--ink);
+  }
+
+  .culture-hero {
+    display: block;
+    gap: 1.75rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .culture-hero-text {
+    padding: 1.8rem;
+    border-radius: 20px;
+    background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.3), transparent 60%),
+      linear-gradient(135deg, rgba(31, 60, 136, 0.85), rgba(6, 13, 30, 0.95));
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 24px 45px rgba(0, 0, 0, 0.35);
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .culture-hero h1 {
+    font-size: clamp(2.2rem, 3.6vw, 3rem);
+    margin-bottom: 0.85rem;
+    text-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .culture-intro {
+    max-width: 640px;
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .hero-badges span {
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    background: rgba(212, 175, 55, 0.15);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .culture-hero-card {
+    padding: 1.8rem;
+    border-radius: 20px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 24px 45px rgba(0, 0, 0, 0.3);
+  }
+
+  .culture-hero-card h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 1rem;
+    color: var(--accent);
+  }
+
+  .culture-hero-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    line-height: 1.6;
+  }
+
+  .culture-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .culture-panel {
+    padding: 1.6rem;
+    border-radius: 18px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 20px 38px rgba(0, 0, 0, 0.25);
+  }
+
+  .culture-panel h2 {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+
+  .culture-panel p {
+    margin: 0 0 0.75rem;
+    line-height: 1.65;
+  }
+
+  .events-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .events-header h2 {
+    font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .events-header p {
+    max-width: 620px;
+    line-height: 1.65;
+  }
+
+  .events-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .event-card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 38px rgba(0, 0, 0, 0.25);
+    display: grid;
+    gap: 0;
+  }
+
+  .event-card figure {
+    margin: 0;
+  }
+
+  .event-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .event-body {
+    padding: 1.5rem;
+  }
+
+  .event-overview {
+    color:black;
+  }
+
+  .event-date {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .event-card h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.35rem;
+  }
+
+  .event-card p {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .winter-dinner-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .winter-dinner-grid img {
+    height: 180px;
+  }
+
+  .culture-cta {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    border-radius: 18px;
+    background: linear-gradient(120deg, rgba(212, 175, 55, 0.646), rgba(31, 61, 136, 0.968));
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .culture-cta h2 {
+    margin: 0 0 0.5rem;
+  }
+
+  .culture-cta p {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 900px) {
+    .culture-hero {
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: stretch;
+    }
+
+    .culture-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .events-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .event-card.featured {
+      grid-column: span 2;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: stretch;
+    }
+
+    .event-card.featured .event-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .event-card.winter-dinner .winter-dinner-grid {
+      height: 100%;
+      align-self: stretch;
+    }
+
+    .event-card.winter-dinner .winter-dinner-grid figure {
+      height: 100%;
+    }
+
+    .event-card.winter-dinner .winter-dinner-grid img {
+      height: 100%;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .winter-dinner-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .winter-dinner-grid img {
+      height: 200px;
+    }
+  }
+</style>

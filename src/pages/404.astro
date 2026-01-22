@@ -1,0 +1,120 @@
+---
+import kress_puke from "../assets/gallery/kress-puke.jpg";
+import Layout from "../layouts/Layout.astro";
+---
+<Layout>
+  <section class="error-shell">
+    <div class="error-card">
+      <div class="error-copy">
+        <p class="error-kicker">Lost in the Sauce</p>
+        <h1>404 - Page not found</h1>
+        <p class="error-body">
+          Oh no. That page never made the roster. Get back 10 and back to an actual page
+        </p>
+        <a class="error-cta" href="/">Back to home</a>
+      </div>
+      <figure class="error-image">
+        <img src={kress_puke.src} alt="Kress on the pitch" />
+      </figure>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  :global(body) {
+    background: #f6f1e9;
+  }
+
+  .error-shell {
+    min-height: calc(100dvh - 160px);
+    display: grid;
+    place-items: center;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  .error-card {
+    width: min(1100px, 100%);
+    display: grid;
+    gap: 2.5rem;
+    padding: 2.5rem;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #f3e7d6 100%);
+    box-shadow: 0 20px 50px rgba(31, 60, 136, 0.15);
+  }
+
+  .error-copy {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .error-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1f3c88;
+  }
+
+  .error-copy h1 {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    line-height: 1.05;
+    color: #1a1a1a;
+  }
+
+  .error-body {
+    font-size: 1.05rem;
+    color: #3c3c3c;
+    max-width: 34ch;
+  }
+
+  .error-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.75rem;
+    border-radius: 999px;
+    background: #1f3c88;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    width: fit-content;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .error-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(31, 60, 136, 0.2);
+  }
+
+  .error-image {
+    margin: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #1f3c88;
+    display: grid;
+    place-items: center;
+    padding: 0.5rem;
+  }
+
+  .error-image img {
+    width: min(100%, 520px);
+    height: auto;
+    object-fit: contain;
+    border-radius: 14px;
+    background: #0f1f46;
+  }
+
+  @media (min-width: 900px) {
+    .error-card {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      padding: 3rem;
+    }
+
+    .error-image img {
+      width: 100%;
+      max-height: 420px;
+    }
+  }
+</style>

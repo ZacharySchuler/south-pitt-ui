@@ -1,0 +1,86 @@
+---
+import facebookIcon from '../assets/social-media-icons/facebook_icon.svg';
+import instagramIcon from '../assets/social-media-icons/Instagram_icon.svg';
+import xIcon from '../assets/social-media-icons/x-icon.webp';
+import discordIcon from "../assets/social-media-icons/discord.svg";
+
+
+//Defaulting facebook, instagram and x to true. 
+// The whole reason for props is because the discord is kinda secretive and we don't want to have it everywhere
+const { facebook = true, instagram = true, x = true, discord=false } = Astro.props; // Provide a default value
+
+---
+
+
+<div class="social-media-strip">
+  {facebook && <div id="social-icon">
+    <a
+      class="social-link"
+      href="https://www.facebook.com/SouthPittRugby/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Facebook"
+    >
+      <img src={facebookIcon.src}/>
+    </a>
+  </div> }
+  {instagram  && <div id="social-icon">
+    <a
+      class="social-link"
+      href="https://www.instagram.com/hooligansrfc/?hl=en"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Instagram"
+    >
+      <img src={instagramIcon.src}/> 
+    </a>
+  </div>}
+  {x && <div id="social-icon">
+    <a
+      class="social-link"
+      href="https://twitter.com/HooligansRugby"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="X"
+    >
+      <img src = {xIcon.src}/>
+    </a>
+  </div>}
+  {discord && <div id="social-icon">
+    <a
+      class="social-link"
+      href="https://discord.com/invite/HyA5YTWXp"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="X"
+    >
+      <img id="discord"  src = {discordIcon.src}/>
+    </a>
+  </div>}
+</div>
+
+<style>
+  .social-media-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+
+    align-items: center;
+
+    gap: 1rem;
+    padding: 1rem 2rem;
+    max-height: 15vh;
+    max-width: 45vh;
+    
+  }
+  #social-icon img{
+  width: 100%;
+  height: 50px; 
+  object-fit: cover; 
+  }
+  #discord{
+    background: rgba(255, 255, 255, 0.8);
+  border-radius: 5px;
+  }
+
+</style>

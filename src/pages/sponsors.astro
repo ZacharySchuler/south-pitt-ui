@@ -1,0 +1,134 @@
+---
+import Layout from "../layouts/Layout.astro"
+import anytimeFitnessLogo from "../assets/sponsors/Anytime-Fitness-logo.png"
+import davidBallarottoLogo from "../assets/sponsors/david-ballarotto.svg"
+import eightPointFinancialLogo from "../assets/sponsors/eightpoint-financial.svg"
+import northeasternIndustrialInsulationLogo from "../assets/sponsors/nei-logo.png"
+import whiteClawLogo from "../assets/sponsors/white-claw-hard-seltzer-logo-vector.svg"
+import lapianaChiropracticLogo from "../assets/sponsors/lapiana-chiropractic-logo.svg"
+import montuckyLogo from "../assets/sponsors/Montucky.svg"
+import redsGoodNewsLogo from "../assets/sponsors/reds-good-news.jpg";
+import pennBrewryIcon from "../assets/sponsors/penn-brewery-icon.png";
+import ContactComponent from "../components/ContactComponent.astro"
+
+import aboutData from "../data/contacts.json";
+
+const images = [
+  anytimeFitnessLogo,
+  davidBallarottoLogo,
+  eightPointFinancialLogo,
+  northeasternIndustrialInsulationLogo,
+  whiteClawLogo,
+  lapianaChiropracticLogo,
+  montuckyLogo,
+  redsGoodNewsLogo,
+  pennBrewryIcon
+];
+
+const { board, coaches } = aboutData;
+
+---
+<Layout>
+
+<!DOCTYPE html>
+<main>
+
+<section>
+<h1> Interested in Sponsoring the Team?</h1>
+
+<ContactComponent/>
+</section>
+
+<h1>Team Sponsors</h1>
+
+
+
+<section class="grid">
+{images.map((image) => (
+<div class="grid-item">
+<img src={image.src} alt={image.alt} loading="lazy" />
+</div>
+))}
+</section>
+
+</main>
+
+
+<style>
+:root {
+--gap: 1rem;
+--radius: 16px;
+}
+
+
+body {
+margin: 0;
+font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+background: #f7f9fc;
+color: #1f2933;
+}
+
+
+main {
+max-width: 1200px;
+margin: 0 auto;
+padding: 1.25rem;
+}
+
+
+h1 {
+text-align: center;
+margin-bottom: 1.5rem;
+font-size: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+
+/* Responsive grid */
+.grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+gap: var(--gap);
+}
+
+
+/* Individual image card */
+.grid-item {
+position: relative;
+overflow: hidden;
+border-radius: var(--radius);
+background: #e5e7eb;
+/* Let height be determined by image ratio */
+}
+
+
+.grid-item img {
+width: 100%;
+height: 100%;
+object-fit: contain;
+background-color: #e5e7eb;
+display: block;
+transition: transform 0.3s ease;
+}
+
+
+.grid-item:hover img {
+transform: scale(1.05);
+}
+
+
+/* Tablet breakpoint */
+@media (min-width: 640px) {
+.grid {
+grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+}
+
+
+/* Desktop breakpoint */
+@media (min-width: 1024px) {
+.grid {
+grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+}
+</style>
+</Layout>
