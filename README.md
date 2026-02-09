@@ -5,11 +5,14 @@
 
 ## Branching Strategy:
 
-### Production Branche:
+Cut a feature branch from master -> merge (squash) back to master
+
+### Production Branch:
 
 - master -> the main production branch - auto-deploys to southpittrugby.com
-### Non Prod branches:
-- dev-main -> the WIP branch - to be merged into master when feature sets are finalized -> deployed to dev-main-south-pitt-ui.zrschu.workers.dev
+
+
+### Feature Branches:
 
 - any-regular-branch -> any feature branch - to be merged into dev-main -> deployed to <branch_name>-south-pitt-ui.zrschu.workers.dev
 
@@ -21,7 +24,7 @@ This repo is configured to deploy automatically using CloudFlare workers.
 The domain is bought on porkbun but namespace servers are configured for cloudflare
 
 
-# Accounts Invovled:
+# Accounts Involved:
 - Cloudflare: Hosting / Deployments
     Username Zrschu (Zachary Schuler's) (hopefully this will get changed)
 - Porkbun - Domain Registrar (where we get the domain)
