@@ -3,11 +3,12 @@ import facebookIcon from '../assets/social-media-icons/facebook_icon.svg';
 import instagramIcon from '../assets/social-media-icons/Instagram_icon.svg';
 import xIcon from '../assets/social-media-icons/x-icon.webp';
 import discordIcon from "../assets/social-media-icons/discord.svg";
+import merchStoreIcon from "../assets/social-media-icons/merch-store.svg";
 
 
 //Defaulting facebook, instagram and x to true. 
 // The whole reason for props is because the discord is kinda secretive and we don't want to have it everywhere
-const { facebook = true, instagram = true, x = true, discord=false } = Astro.props; // Provide a default value
+const { facebook = true, instagram = true, x = true, discord=false, merch = true } = Astro.props; // Provide a default value
 
 ---
 
@@ -55,6 +56,17 @@ const { facebook = true, instagram = true, x = true, discord=false } = Astro.pro
       aria-label="X"
     >
       <img id="discord"  src = {discordIcon.src}/>
+    </a>
+  </div>}
+  {merch && <div id="social-icon">
+    <a
+      class="social-link"
+      href="https://stores.inksoft.com/southpghrugby/shop/home"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Merch Store"
+    >
+      <img src={merchStoreIcon.src} alt="Merch Store" />
     </a>
   </div>}
 </div>
