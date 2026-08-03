@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import practiceData from "../data/practice.json";
+import practicePoster from "../assets/schedules/fall-season-training-2026.jpg";
 
 const {
   location,
@@ -8,6 +9,8 @@ const {
   "Location Address": locationAddress,
   "Days of Week": days,
 } = practiceData;
+
+const usePracticePoster = true;
 ---
 <Layout title="Join South Pittsburgh Rugby">
   <section class="join-page" aria-labelledby="join-title">
@@ -33,7 +36,7 @@ const {
       </div>
 
       <div class="info-grid">
-        <article class="info-card">
+        <article class="info-card" style = {usePracticePoster ? 'display:none': ' '}>
           <h3>Practice location and times</h3>
           <p class="practice-location">{location}</p>
           <p>{locationAddress}</p>
@@ -48,6 +51,28 @@ const {
             </li>
           </ul>
           <div>*Note that exact practice times depend on the season. Join the discord for the most up-to-date information.</div>
+        </article>
+
+        <article class="info-card" style = {usePracticePoster ? ' ': 'display:none'}>
+          <h3>Practice Schedule</h3>
+          <figure class="practice-poster-figure">
+            <button class="poster-trigger" type="button" aria-label="View practice schedule full screen">
+              <img
+                class="practice-poster"
+                src={practicePoster.src}
+                alt="Fall 2026 Practice Schedule"
+              />
+            </button>
+          </figure>
+          <div class="poster-modal" role="dialog" aria-modal="true" aria-hidden="true">
+            <button class="poster-close" type="button" aria-label="Close full screen view">
+              ✕
+            </button>
+            <img
+              src={practicePoster.src}
+              alt="Fall 2026 Practice Schedule"
+            />
+          </div>
         </article>
 
         <article class="info-card">
@@ -97,6 +122,38 @@ const {
     </section>
   </section>
 </Layout>
+
+<script>
+  const modal = document.querySelector(".poster-modal");
+  const trigger = document.querySelector(".poster-trigger");
+  const closeButton = document.querySelector(".poster-close");
+
+  const setModalState = (isOpen) => {
+    modal?.classList.toggle("is-open", isOpen);
+    modal?.setAttribute("aria-hidden", String(!isOpen));
+    document.body.style.overflow = isOpen ? "hidden" : "";
+  };
+
+  trigger?.addEventListener("click", () => {
+    setModalState(true);
+  });
+
+  closeButton?.addEventListener("click", () => {
+    setModalState(false);
+  });
+
+  modal?.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      setModalState(false);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      setModalState(false);
+    }
+  });
+</script>
 
 <style>
   .join-page {
@@ -157,6 +214,70 @@ const {
   .info-card h3 {
     margin-bottom: 0.75rem;
     font-size: 1.2rem;
+  }
+
+  .poster-trigger {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .poster-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1.5rem;
+    background: rgba(12, 18, 30, 0.88);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  .poster-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .poster-modal img {
+    width: min(90vw, 1000px);
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 18px;
+    background: #0f1f46;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  .poster-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-size: 1.75rem;
+    cursor: pointer;
+  }
+
+  .practice-poster-figure {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .practice-poster {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
   }
 
   .practice-location {
