@@ -1,16 +1,25 @@
 {
 	"main": "dist/_worker.js/index.js",
 	"name": "south-pitt-ui",
-  "compatibility_date": "2025-12-13",
-  "compatibility_flags": [
-    "nodejs_compat",
-    "global_fetch_strictly_public"
-  ],
+	"compatibility_date": "2025-12-13",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
 	"assets": {
 		"binding": "ASSETS",
 		"directory": "./dist"
 	},
 	"observability": {
-    "enabled": true
-  }
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "rugby-history",
+			// Replace with the id from: npx wrangler d1 create rugby-history
+			"database_id": "00000000-0000-0000-0000-000000000000",
+			"migrations_dir": "migrations"
+		}
+	]
 }
