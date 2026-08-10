@@ -16,9 +16,8 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "rugby-history",
-			// Replace with the id from: npx wrangler d1 create rugby-history
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_name": "south-pitt-history-metadata",
+			"database_id": "3a327522-3b0b-4d55-abd1-50225345009d",
 			"migrations_dir": "migrations"
 		}
 	]

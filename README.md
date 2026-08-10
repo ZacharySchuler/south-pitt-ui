@@ -66,15 +66,9 @@ It follows a standard astro directory structure of:
 
 ## History Book (D1)
 
-Metadata lives in Cloudflare D1 (`rugby-history`). Photos will use Google Drive later; keep all secrets in Cloudflare secrets / `.dev.vars` (never commit them).
+Metadata lives in Cloudflare D1 (`south-pitt-history-metadata`, binding `DB`). Photos will use Google Drive later; keep all secrets in Cloudflare secrets / `.dev.vars` (never commit them).
 
-Create the remote database once (club Cloudflare account):
-
-```sh
-npx wrangler d1 create rugby-history
-```
-
-Put the returned `database_id` into `wrangler.jsonc` under `d1_databases`.
+The remote database is already created and wired in `wrangler.jsonc`.
 
 Apply migrations:
 
