@@ -2,6 +2,7 @@
 // Base layout for an Astro site
 import harry_icon from "../assets/harry.svg";
 import SponsorStrip from "../components/SponsorStrip.astro";
+import Analytics from "../components/Analytics.astro";
 
 const {
   title = "South Pitt Rugby",
@@ -31,6 +32,7 @@ const socialImageUrl = new URL(harry_icon.src, siteUrl).toString();
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImageUrl} />
+    <Analytics />
   </head>
 
   <body>

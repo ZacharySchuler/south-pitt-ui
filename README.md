@@ -24,6 +24,43 @@ This repo is configured to deploy automatically using CloudFlare workers.
 The domain is bought on porkbun but namespace servers are configured for cloudflare
 
 
+# Meta Ads / Analytics (UTM + ROI)
+
+Landing page for paid Meta traffic: `https://southpittrugby.com/join/`
+
+## Ad URL (UTMs)
+
+Use destination URLs like:
+
+```text
+https://southpittrugby.com/join/?utm_source=meta&utm_medium=paid_social&utm_campaign=fall_recruit_2026&utm_content=video_a&utm_term=lookalike_local
+```
+
+| Param | Meaning | Example |
+| --- | --- | --- |
+| `utm_source` | Platform | `meta` |
+| `utm_medium` | Channel | `paid_social` |
+| `utm_campaign` | Campaign | `fall_recruit_2026` |
+| `utm_content` | Creative | `video_a` |
+| `utm_term` | Audience | `lookalike_local` |
+
+GA4 picks these up automatically on landing. Keep naming consistent across ads.
+
+## Site tracking setup
+
+1. Create a **GA4** web data stream and copy the Measurement ID (`G-...`).
+2. Create a **Meta Pixel** in Events Manager and copy the Pixel ID.
+3. Copy `.env.example` → `.env` and fill in:
+   - `PUBLIC_GA_MEASUREMENT_ID`
+   - `PUBLIC_META_PIXEL_ID`
+4. For production, set the same variables in the **Cloudflare** project build/environment settings so deploys include the scripts.
+5. Rebuild / redeploy after setting vars (these are bake-in `PUBLIC_` values).
+
+Conversion event: Discord invite clicks fire Meta `Lead` and GA4 `join_discord_click` (labels include `join_page_cta`, `contact_page_discord`, `social_strip_discord`).
+
+In Meta Ads Manager, map the Pixel `Lead` event as your optimization/reporting conversion. In GA4, mark `join_discord_click` as a key event and compare against Meta spend for cost-per-lead.
+
+
 # Accounts Involved:
 - Cloudflare: Hosting / Deployments
     Username Zrschu (Zachary Schuler's) (hopefully this will get changed)

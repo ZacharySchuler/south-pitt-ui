@@ -1,0 +1,127 @@
+---
+/**
+ * Loads GA4 + Meta Pixel when IDs are provided via env vars.
+ * Set these in `.env` locally and in Cloudflare Workers/Pages build vars for production:
+ *   PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+ *   PUBLIC_META_PIXEL_ID=123456789012345
+ */
+const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim() || "";
+const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim() || "";
+---
+
+{
+  gaId && (
+    <>
+      <script
+        is:inline
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+      ></script>
+      <script is:inline define:vars={{ gaId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        window.gtag = gtag;
+        gtag("js", new Date());
+        gtag("config", gaId, {
+          anonymize_ip: true,
+          send_page_view: true,
+        });
+      </script>
+    </>
+  )
+}
+
+{
+  metaPixelId && (
+    <>
+      <script is:inline define:vars={{ metaPixelId }}>
+        !(function (f, b, e, v, n, t, s) {
+          if (f.fbq) return;
+          n = f.fbq = function () {
+            n.callMethod
+              ? n.callMethod.apply(n, arguments)
+              : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = "2.0";
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(
+          window,
+          document,
+          "script",
+          "https://connect.facebook.net/en_US/fbevents.js",
+        );
+        fbq("init", metaPixelId);
+        fbq("track", "PageView");
+      </script>
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style="display:none"
+          src={`https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1`}
+          alt=""
+        />
+      </noscript>
+    </>
+  )
+}
+
+<script is:inline>
+  /**
+   * Fires GA4 + Meta conversion events for elements with:
+   *   data-track-conversion="Lead"
+   *   data-track-label="join_page_cta" (optional)
+   *
+   * GA4 event name defaults to join_discord_click for Discord CTAs.
+   */
+  (function () {
+    function trackConversion(el) {
+      const metaEvent = el.getAttribute("data-track-conversion");
+      if (!metaEvent) return;
+
+      const label =
+        el.getAttribute("data-track-label") ||
+        el.getAttribute("aria-label") ||
+        "unknown";
+      const gaEvent =
+        el.getAttribute("data-track-ga-event") || "join_discord_click";
+
+      if (typeof window.gtag === "function") {
+        window.gtag("event", gaEvent, {
+          event_category: "conversion",
+          event_label: label,
+          page_path: window.location.pathname,
+        });
+      }
+
+      if (typeof window.fbq === "function") {
+        window.fbq("track", metaEvent, {
+          content_name: label,
+          content_category: "discord_join",
+        });
+      }
+    }
+
+    document.addEventListener(
+      "click",
+      function (event) {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const el = target.closest("[data-track-conversion]");
+        if (!el) return;
+        trackConversion(el);
+      },
+      true,
+    );
+  })();
+</script>
