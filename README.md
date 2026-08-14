@@ -56,9 +56,16 @@ GA4 picks these up automatically on landing. Keep naming consistent across ads.
 4. For production, set the same variables in the **Cloudflare** project build/environment settings so deploys include the scripts.
 5. Rebuild / redeploy after setting vars (these are bake-in `PUBLIC_` values).
 
-Conversion event: Discord invite clicks fire Meta `Lead` and GA4 `join_discord_click` (labels include `join_page_cta`, `contact_page_discord`, `social_strip_discord`).
+Conversion events on `/join/`:
 
-In Meta Ads Manager, map the Pixel `Lead` event as your optimization/reporting conversion. In GA4, mark `join_discord_click` as a key event and compare against Meta spend for cost-per-lead.
+| CTA | GA4 event | Meta Pixel event | Label |
+| --- | --- | --- | --- |
+| Join Discord | `join_discord_click` | `Lead` | `join_page_discord` |
+| Email the team | `join_email_click` | `Contact` | `join_page_email` |
+
+Discord links elsewhere use the same Discord events (`contact_page_discord`, `social_strip_discord`).
+
+In Meta Ads Manager, you can optimize on Pixel `Lead` (Discord) and/or `Contact` (email). In GA4, mark `join_discord_click` and `join_email_click` as key events and compare against Meta spend.
 
 
 # Accounts Involved:

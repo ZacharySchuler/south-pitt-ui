@@ -79,10 +79,10 @@ const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim() || "";
 <script is:inline>
   /**
    * Fires GA4 + Meta conversion events for elements with:
-   *   data-track-conversion="Lead"
-   *   data-track-label="join_page_cta" (optional)
-   *
-   * GA4 event name defaults to join_discord_click for Discord CTAs.
+   *   data-track-conversion="Lead" | "Contact" | ...
+   *   data-track-ga-event="join_discord_click" | "join_email_click"
+   *   data-track-label="join_page_discord" (optional)
+   *   data-track-category="discord_join" (optional)
    */
   (function () {
     function trackConversion(el) {
@@ -94,11 +94,13 @@ const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim() || "";
         el.getAttribute("aria-label") ||
         "unknown";
       const gaEvent =
-        el.getAttribute("data-track-ga-event") || "join_discord_click";
+        el.getAttribute("data-track-ga-event") || "join_cta_click";
+      const category =
+        el.getAttribute("data-track-category") || "conversion";
 
       if (typeof window.gtag === "function") {
         window.gtag("event", gaEvent, {
-          event_category: "conversion",
+          event_category: category,
           event_label: label,
           page_path: window.location.pathname,
         });
@@ -107,7 +109,7 @@ const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim() || "";
       if (typeof window.fbq === "function") {
         window.fbq("track", metaEvent, {
           content_name: label,
-          content_category: "discord_join",
+          content_category: category,
         });
       }
     }
