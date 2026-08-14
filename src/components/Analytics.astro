@@ -1,11 +1,16 @@
 ---
 /**
- * Loads GA4 + Meta Pixel when IDs are provided via env vars.
- * Set these in `.env` locally and in Cloudflare Workers/Pages build vars for production:
- *   PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+ * Loads GA4 + Meta Pixel.
+ *
+ * GA4 Measurement ID is public and defaults below. Override with
+ * PUBLIC_GA_MEASUREMENT_ID if needed.
+ *
+ * Meta Pixel stays env-only until an ID is provided:
  *   PUBLIC_META_PIXEL_ID=123456789012345
  */
-const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim() || "";
+const DEFAULT_GA_MEASUREMENT_ID = "G-4FT2F15889";
+const gaId =
+  import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim() || DEFAULT_GA_MEASUREMENT_ID;
 const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim() || "";
 ---
 

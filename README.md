@@ -48,13 +48,10 @@ GA4 picks these up automatically on landing. Keep naming consistent across ads.
 
 ## Site tracking setup
 
-1. Create a **GA4** web data stream and copy the Measurement ID (`G-...`).
+1. **GA4** is already wired with Measurement ID `G-4FT2F15889` (public client ID; override via `PUBLIC_GA_MEASUREMENT_ID` if needed).
 2. Create a **Meta Pixel** in Events Manager and copy the Pixel ID.
-3. Copy `.env.example` → `.env` and fill in:
-   - `PUBLIC_GA_MEASUREMENT_ID`
-   - `PUBLIC_META_PIXEL_ID`
-4. For production, set the same variables in the **Cloudflare** project build/environment settings so deploys include the scripts.
-5. Rebuild / redeploy after setting vars (these are bake-in `PUBLIC_` values).
+3. Set `PUBLIC_META_PIXEL_ID` in Cloudflare build/environment settings (and optionally local `.env`).
+4. Rebuild / redeploy after setting the Meta Pixel var.
 
 Conversion events fire **only on `/join/` CTAs** (the Meta ads landing page). Discord links on the homepage, culture page, contact page, etc. do **not** fire Lead — that keeps organic traffic from inflating ad conversion counts.
 
