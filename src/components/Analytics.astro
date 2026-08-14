@@ -84,8 +84,10 @@ const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim() || "";
    *   data-track-label="join_page_discord" (optional)
    *   data-track-category="discord_join" (optional)
    *
-   * Join-intent CTAs (Discord + email) both use Meta Lead; GA4 event
-   * names stay unique so channel mix is still measurable.
+   * Join-intent CTAs on /join/ (Discord + email) both use Meta Lead; GA4
+   * event names stay unique so channel mix is still measurable. Do not
+   * attach data-track-conversion on sitewide nav/social links — that would
+   * mix organic clicks into ad Lead volume.
    */
   (function () {
     function trackConversion(el) {

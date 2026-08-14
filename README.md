@@ -56,16 +56,14 @@ GA4 picks these up automatically on landing. Keep naming consistent across ads.
 4. For production, set the same variables in the **Cloudflare** project build/environment settings so deploys include the scripts.
 5. Rebuild / redeploy after setting vars (these are bake-in `PUBLIC_` values).
 
-Conversion events on `/join/`: both CTAs are Meta Pixel `Lead` events (same join-intent conversion). GA4 uses distinct event names so you can still compare Discord vs email.
+Conversion events fire **only on `/join/` CTAs** (the Meta ads landing page). Discord links on the homepage, culture page, contact page, etc. do **not** fire Lead — that keeps organic traffic from inflating ad conversion counts.
 
 | CTA | GA4 event | Meta Pixel event | Label |
 | --- | --- | --- | --- |
 | Join Discord | `join_discord_click` | `Lead` | `join_page_discord` |
 | Email the team | `join_email_click` | `Lead` | `join_page_email` |
 
-Discord links elsewhere use the same Discord GA4 event (`contact_page_discord`, `social_strip_discord`) and also fire Meta `Lead`.
-
-In Meta Ads Manager, optimize on Pixel `Lead`. Distinguish channel via `content_name` (`join_page_discord` vs `join_page_email`). In GA4, mark `join_discord_click` and `join_email_click` as key events.
+In Meta Ads Manager, optimize on Pixel `Lead`. Distinguish channel via `content_name` (`join_page_discord` vs `join_page_email`). In GA4, mark `join_discord_click` and `join_email_click` as key events, and filter by `utm_source=meta` when judging paid ROI.
 
 
 # Accounts Involved:
