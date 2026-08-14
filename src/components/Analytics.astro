@@ -79,10 +79,13 @@ const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim() || "";
 <script is:inline>
   /**
    * Fires GA4 + Meta conversion events for elements with:
-   *   data-track-conversion="Lead" | "Contact" | ...
+   *   data-track-conversion="Lead"
    *   data-track-ga-event="join_discord_click" | "join_email_click"
    *   data-track-label="join_page_discord" (optional)
    *   data-track-category="discord_join" (optional)
+   *
+   * Join-intent CTAs (Discord + email) both use Meta Lead; GA4 event
+   * names stay unique so channel mix is still measurable.
    */
   (function () {
     function trackConversion(el) {
