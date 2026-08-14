@@ -111,14 +111,22 @@ const usePracticePoster = true;
         </p>
       </div>
 
-      <a
-        class="discord-cta"
-        href="https://discord.com/invite/HyA5YTWXp"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Join the South Pitt Rugby Discord
-      </a>
+      <div class="join-ctas">
+        <a
+          class="discord-cta"
+          href="https://discord.com/invite/HyA5YTWXp"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Join the South Pitt Rugby Discord
+        </a>
+        <a
+          class="discord-cta"
+          href="mailto:hooligansrugby@gmail.com"
+        >
+          Email the team
+        </a>
+      </div>
     </section>
   </section>
 </Layout>
@@ -323,11 +331,17 @@ const usePracticePoster = true;
     box-shadow: 0 20px 35px rgba(15, 23, 42, 0.12);
   }
 
+  .join-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
   .discord-cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-top: 0.5rem;
     padding: 0.85rem 1.5rem;
     border-radius: 999px;
     background: #1f3c88;
