@@ -1,0 +1,937 @@
+# Rugby History Book — Implementation Plan
+
+## Project Context
+
+We currently have a static rugby team website hosted on Cloudflare.
+
+We want to add a private "History Book" feature to the website.
+
+The History Book should:
+
+* Be accessible from the existing website under `/history`
+* Be protected by a shared team password
+* Allow users to submit memories from the website
+* Allow users to submit memories from Discord
+* Allow each memory to contain:
+
+  * year
+  * optional date
+  * optional title
+  * caption
+  * one or more photos
+  * submission source
+  * submitter identity when available
+  * created timestamp
+* Make submitted memories immediately visible
+* Not require admin approval or moderation
+* Store metadata in Cloudflare D1
+* Store photos in the club Google Drive
+* Keep Google Drive photos private
+* Serve photos through the backend rather than exposing public Drive URLs
+
+The existing public website should remain mostly static.
+
+---
+
+# Target Architecture
+
+```text
+                     Club Member
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+             ▼                       ▼
+      Static Rugby Site            Discord
+       /history/submit            /yearbook
+             │                       │
+             └──────────┬────────────┘
+                        ▼
+               Cloudflare Worker
+                 ┌──────┴──────┐
+                 ▼             ▼
+                D1       Google Drive
+             metadata       photos
+```
+
+Cloudflare Worker responsibilities:
+
+* authentication
+* history API
+* memory creation
+* photo retrieval
+* Google Drive integration
+* Discord interactions
+* request validation
+
+Cloudflare D1 responsibilities:
+
+* memories
+* photo metadata
+* storage IDs
+* submission metadata
+
+Google Drive responsibilities:
+
+* original image storage
+
+---
+
+# Core Domain Model
+
+Use a `Memory` as the main domain object.
+
+Conceptually:
+
+```text
+Memory
+├── id
+├── year
+├── event_date
+├── title
+├── caption
+├── source
+├── submitted_by
+├── created_at
+└── photos[]
+```
+
+Do not model the application around Google Drive folders.
+
+Google Drive should only be a storage implementation.
+
+---
+
+# Step 1 — Create the D1 Database
+
+Create a Cloudflare D1 database for the History Book.
+
+Suggested name:
+
+```text
+rugby-history
+```
+
+Create a `memories` table.
+
+Example schema:
+
+```sql
+CREATE TABLE memories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    year INTEGER NOT NULL,
+    event_date TEXT,
+    title TEXT,
+    caption TEXT NOT NULL,
+    source TEXT NOT NULL,
+    submitted_by TEXT,
+    created_at TEXT NOT NULL
+);
+```
+
+Create a `memory_photos` table.
+
+Example schema:
+
+```sql
+CREATE TABLE memory_photos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    memory_id INTEGER NOT NULL,
+    storage_provider TEXT NOT NULL,
+    storage_id TEXT NOT NULL,
+    original_filename TEXT,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+
+    FOREIGN KEY(memory_id)
+        REFERENCES memories(id)
+);
+```
+
+Use generic storage fields:
+
+```text
+storage_provider
+storage_id
+```
+
+Do not hardcode the schema around Google Drive-specific field names.
+
+Example:
+
+```text
+storage_provider = "google_drive"
+storage_id = "<google-drive-file-id>"
+```
+
+---
+
+# Step 2 — Add a Cloudflare Worker Backend
+
+Add a Cloudflare Worker or Worker-backed API to the existing static site.
+
+The public static website should remain static.
+
+The Worker should handle dynamic routes.
+
+Initial API routes:
+
+```text
+GET  /api/history/memories
+POST /api/history/memories
+GET  /api/history/photos/:photoId
+
+POST /api/history/login
+POST /api/history/logout
+```
+
+Later add:
+
+```text
+POST /api/discord/interactions
+```
+
+---
+
+# Step 3 — Create a Clean Backend Structure
+
+Organize the Worker so infrastructure details are separated from domain logic.
+
+Suggested structure:
+
+```text
+src/
+├── index.ts
+│
+├── routes/
+│   ├── memories.ts
+│   ├── photos.ts
+│   ├── auth.ts
+│   └── discord.ts
+│
+├── services/
+│   ├── memory-service.ts
+│   ├── photo-storage.ts
+│   └── auth-service.ts
+│
+├── repositories/
+│   └── memory-repository.ts
+│
+└── storage/
+    └── google-drive-storage.ts
+```
+
+The website and Discord integrations should reuse the same domain/service functions.
+
+Do not duplicate memory creation logic.
+
+Create a reusable function similar to:
+
+```typescript
+createMemory({
+    year,
+    eventDate,
+    title,
+    caption,
+    source,
+    submittedBy,
+    photos
+})
+```
+
+Conceptually:
+
+```text
+Website ──────┐
+              ▼
+        createMemory()
+              ▲
+Discord ──────┘
+```
+
+---
+
+# Step 4 — Implement Text-Only Memory Creation
+
+Before implementing photos, make the D1 flow work.
+
+Support:
+
+```text
+POST /api/history/memories
+```
+
+Example request:
+
+```json
+{
+  "year": 2026,
+  "title": "Pittsburgh 7s",
+  "caption": "We won Pittsburgh 7s.",
+  "source": "web"
+}
+```
+
+The Worker should:
+
+1. validate input
+2. insert the memory into D1
+3. return the created memory
+
+Do not add image storage yet.
+
+---
+
+# Step 5 — Implement Memory Retrieval
+
+Implement:
+
+```text
+GET /api/history/memories
+```
+
+Return memories ordered approximately as:
+
+```text
+year DESC
+event_date DESC
+created_at DESC
+```
+
+The frontend should not need to know anything about D1.
+
+Return a clean JSON API model.
+
+Example:
+
+```json
+[
+  {
+    "id": 42,
+    "year": 2026,
+    "eventDate": "2026-07-18",
+    "title": "Pittsburgh 7s",
+    "caption": "We finally brought home the trophy.",
+    "source": "web",
+    "photos": []
+  }
+]
+```
+
+---
+
+# Step 6 — Build the `/history` Page
+
+Add:
+
+```text
+/history
+```
+
+This page should call:
+
+```text
+GET /api/history/memories
+```
+
+Group memories visually by year.
+
+Example layout:
+
+```text
+Hooligans History
+
+2026
+--------------------------------
+
+Pittsburgh 7s
+July 18, 2026
+
+We finally brought home the trophy.
+
+[photo] [photo]
+
+
+2025
+--------------------------------
+...
+```
+
+At this stage, text-only memories are acceptable.
+
+The goal is to prove:
+
+```text
+Static frontend
+      ↓
+Worker
+      ↓
+D1
+      ↓
+History page
+```
+
+---
+
+# Step 7 — Connect Google Drive
+
+Create a folder in the club Google Drive.
+
+Suggested structure:
+
+```text
+Hooligans History Book/
+├── 2026/
+├── 2025/
+├── 2024/
+└── Legacy/
+```
+
+The exact folder structure should not be relied on by the application.
+
+Enable the Google Drive API.
+
+Configure OAuth credentials so the Cloudflare Worker can access the club Google account.
+
+Store secrets in Cloudflare secrets.
+
+Possible values:
+
+```text
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+GOOGLE_REFRESH_TOKEN
+GOOGLE_DRIVE_ROOT_FOLDER_ID
+```
+
+Never commit these values to source control.
+
+---
+
+# Step 8 — Create a Photo Storage Abstraction
+
+Do not let the rest of the application directly depend on Google Drive.
+
+Create an interface conceptually similar to:
+
+```typescript
+interface PhotoStorage {
+    upload(file: File, metadata?: object): Promise<StoredPhoto>;
+    download(id: string): Promise<Response>;
+    delete(id: string): Promise<void>;
+}
+```
+
+Example returned value:
+
+```typescript
+{
+    provider: "google_drive",
+    id: "1ABCxyz..."
+}
+```
+
+Implement:
+
+```text
+GoogleDrivePhotoStorage
+```
+
+The memory service should depend on the generic `PhotoStorage` abstraction.
+
+---
+
+# Step 9 — Add Website Memory Submission
+
+Create:
+
+```text
+/history/submit
+```
+
+Fields:
+
+```text
+Year
+Date (optional)
+Title (optional)
+Caption
+Photos
+```
+
+Allow one or more photos.
+
+Submission flow:
+
+```text
+Browser
+   │
+   ▼
+Cloudflare Worker
+   │
+   ├── upload images → Google Drive
+   │
+   └── save metadata → D1
+```
+
+A successful submission should immediately become visible on `/history`.
+
+There is no approval process.
+
+---
+
+# Step 10 — Store Photo Metadata in D1
+
+When an image is uploaded successfully to Google Drive, create a `memory_photos` record.
+
+Example:
+
+```text
+memory_id = 42
+storage_provider = "google_drive"
+storage_id = "1ABCxyz..."
+original_filename = "team-photo.jpg"
+sort_order = 0
+```
+
+If multiple images exist, each should have its own `memory_photos` row.
+
+---
+
+# Step 11 — Serve Photos Through the Worker
+
+Do not expose public Google Drive URLs.
+
+Keep Drive files private.
+
+Implement:
+
+```text
+GET /api/history/photos/:photoId
+```
+
+Flow:
+
+```text
+Browser
+   │
+   ▼
+GET /api/history/photos/123
+   │
+   ▼
+Cloudflare Worker
+   │
+   ├── verify session
+   ├── find photo in D1
+   ├── get storage_id
+   ├── fetch from Google Drive
+   └── return image bytes
+```
+
+The HTML should use URLs similar to:
+
+```text
+/api/history/photos/123
+```
+
+rather than Google Drive links.
+
+---
+
+# Step 12 — Add Shared Password Authentication
+
+Create:
+
+```text
+/history/login
+```
+
+The page should ask for one shared team password.
+
+Example:
+
+```text
+Hooligans History Book
+
+Team password
+[ **************** ]
+
+[ Enter ]
+```
+
+Implement:
+
+```text
+POST /api/history/login
+```
+
+The Worker should validate the submitted password against a securely stored secret or password hash.
+
+On successful authentication, set a signed session cookie.
+
+Cookie requirements:
+
+```text
+HttpOnly
+Secure
+SameSite=Lax
+```
+
+Use a reasonably long expiration because this is a low-risk private club archive.
+
+Protect:
+
+```text
+/history
+/history/*
+/api/history/*
+```
+
+except for the login endpoint.
+
+Do not store the team password in frontend JavaScript.
+
+---
+
+# Step 13 — Add Logout
+
+Implement:
+
+```text
+POST /api/history/logout
+```
+
+Clear the history session cookie.
+
+Optionally expose a small logout button somewhere inside `/history`.
+
+---
+
+# Step 14 — Create the Discord Application
+
+Create a Discord application for the rugby club.
+
+Install it only in the club Discord server.
+
+Create a slash command:
+
+```text
+/yearbook
+```
+
+MVP parameters:
+
+```text
+year
+caption
+photo
+```
+
+Optional future parameters:
+
+```text
+title
+date
+additional photos
+```
+
+Keep the first implementation simple.
+
+---
+
+# Step 15 — Add the Discord Interaction Endpoint
+
+Implement:
+
+```text
+POST /api/discord/interactions
+```
+
+Configure this URL as the Discord application's interaction endpoint.
+
+The Worker must:
+
+1. verify Discord's request signature
+2. reject invalid requests
+3. confirm the command came from the correct Discord server
+4. inspect the command
+5. process `/yearbook`
+
+Store required Discord configuration as secrets.
+
+Possible values:
+
+```text
+DISCORD_APPLICATION_ID
+DISCORD_PUBLIC_KEY
+DISCORD_GUILD_ID
+```
+
+---
+
+# Step 16 — Translate Discord Submissions Into the Core Domain Model
+
+Do not put Google Drive or D1 logic directly into the Discord route.
+
+Translate the Discord command into a normal memory creation request.
+
+Example:
+
+```typescript
+await memoryService.createMemory({
+    year,
+    caption,
+    source: "discord",
+    submittedBy: discordUserId,
+    photos
+});
+```
+
+The same `createMemory()` function should be used by website submissions.
+
+---
+
+# Step 17 — Ingest Discord Attachments
+
+When a Discord user submits:
+
+```text
+/yearbook
+year: 2017
+caption: "Road trip to Cincinnati"
+photo: bus.jpg
+```
+
+The flow should be:
+
+```text
+Discord attachment
+       │
+       ▼
+Cloudflare Worker
+       │
+       ├── download attachment
+       │
+       ▼
+Google Drive
+       │
+       └── return Drive file ID
+       │
+       ▼
+D1
+```
+
+Do not rely on Discord as permanent file storage.
+
+After ingestion, Google Drive should be the permanent copy.
+
+---
+
+# Step 18 — Return a Discord Confirmation
+
+After a successful submission, return an ephemeral/private confirmation.
+
+Example:
+
+```text
+✅ Added to the History Book
+
+2017 — Road trip to Cincinnati
+```
+
+No approval message is required because submissions are immediately live.
+
+If an upload fails, return a clear error response.
+
+---
+
+# Step 19 — Add Input Validation
+
+Validate all website and Discord submissions.
+
+At minimum:
+
+* valid year
+* caption length
+* allowed image MIME types
+* allowed image extensions
+* maximum image size
+* maximum number of images
+* non-empty uploads
+* safe filenames
+* reasonable request size
+
+Do not trust MIME type or filename alone where stronger validation is practical.
+
+---
+
+# Step 20 — Decide How to Handle Image Size
+
+Decide whether to:
+
+```text
+A. preserve original images
+```
+
+or:
+
+```text
+B. resize/compress uploads
+```
+
+If preserving originals, monitor Google Drive storage usage.
+
+A possible future design is:
+
+```text
+original image
++
+generated web-sized image
+```
+
+but do not add this complexity unless needed.
+
+---
+
+# Step 21 — Handle Partial Failures
+
+Define expected behavior if:
+
+```text
+D1 insert succeeds
+but Google Drive upload fails
+```
+
+or:
+
+```text
+Google Drive upload succeeds
+but D1 insert fails
+```
+
+Avoid leaving orphaned data where practical.
+
+The memory creation service should coordinate storage and metadata creation.
+
+Document the chosen failure strategy.
+
+---
+
+# Step 22 — Add Basic Operational Safeguards
+
+Before importing a large archive:
+
+* verify D1 backups/export
+* verify Google Drive accessibility by club officers
+* ensure secrets are not tied only to a personal account
+* make Cloudflare ownership transferable to future club officers
+* document Google Cloud ownership
+* document Discord application ownership
+* document recovery steps
+* test expired/invalid authentication
+* test inaccessible Drive files
+* test malformed Discord requests
+
+---
+
+# Step 23 — Add Historical Import Later
+
+Do not make bulk import part of the initial MVP.
+
+After the core system works, consider a separate import script or admin-only developer tool.
+
+Example source directory:
+
+```text
+photos/
+├── 2008/
+├── 2009/
+├── 2010/
+└── ...
+```
+
+The importer can:
+
+1. upload photos to Drive
+2. create D1 memory records
+3. create photo associations
+
+This can be a one-off development utility rather than a permanent website feature.
+
+---
+
+# Recommended Implementation Order
+
+Implement in this exact general order:
+
+```text
+1. Create D1 database
+2. Create database migrations/schema
+3. Add Cloudflare Worker
+4. Implement memory repository
+5. Implement memory service
+6. Implement text-only POST /api/history/memories
+7. Implement GET /api/history/memories
+8. Build /history
+9. Build /history/submit
+10. Connect Google Drive
+11. Create PhotoStorage abstraction
+12. Implement GoogleDrivePhotoStorage
+13. Add photo uploads
+14. Add protected photo retrieval
+15. Add shared-password authentication
+16. Protect /history and history APIs
+17. Add logout
+18. Create Discord application
+19. Implement Discord interaction verification
+20. Implement /yearbook
+21. Feed Discord submissions into createMemory()
+22. Add upload validation
+23. Add failure handling
+24. Add operational documentation
+25. Add historical import tooling later
+```
+
+---
+
+# Important Architectural Rules
+
+When implementing this project, preserve these rules:
+
+1. The existing public website should remain mostly static.
+
+2. D1 stores structured metadata.
+
+3. Google Drive stores image files.
+
+4. D1 stores Google Drive file IDs, not public Drive URLs.
+
+5. Google Drive files remain private.
+
+6. Photos are served through the Cloudflare Worker.
+
+7. Website submissions and Discord submissions use the same `createMemory()` business logic.
+
+8. Discord is an input interface, not a storage system.
+
+9. Google Drive is a storage implementation, not the application's database.
+
+10. Do not build admin approval or moderation functionality.
+
+11. Successful submissions become immediately visible.
+
+12. Keep infrastructure-specific code behind abstractions where practical.
+
+13. Keep credentials and tokens in Cloudflare secrets.
+
+14. Do not expose the shared team password to frontend JavaScript.
+
+15. Optimize for a simple MVP before adding tags, people, comments, likes, search, or other history features.
+
+---
+
+# Suggested First LLM Task
+
+Start with:
+
+"Implement Step 1 through Step 3 of this plan. Do not implement later steps yet. Show me the proposed file structure, D1 migration, Wrangler configuration changes, and minimal Worker entry point. Explain any assumptions before providing the code."
+
+After that task is complete, continue one step or small group of steps at a time rather than asking the LLM to implement the entire system in a single pass.
