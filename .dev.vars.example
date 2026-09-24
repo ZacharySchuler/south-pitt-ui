@@ -1,0 +1,18 @@
+# Local Cloudflare Worker / Astro platform-proxy secrets.
+# Copy to `.dev.vars` (gitignored) and fill in real values.
+# Never commit `.dev.vars`.
+
+# Google Drive (Steps 7–11) — required for photo upload/serve
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REFRESH_TOKEN=
+GOOGLE_DRIVE_ROOT_FOLDER_ID=
+
+# Shared-password auth (Step 12 — not required yet)
+# HISTORY_PASSWORD=
+# HISTORY_SESSION_SECRET=
+
+# Discord (Steps 14+ — not required yet)
+# DISCORD_APPLICATION_ID=
+# DISCORD_PUBLIC_KEY=
+# DISCORD_GUILD_ID=
