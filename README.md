@@ -49,7 +49,6 @@ All commands are run from the root of the project, from a terminal:
 | `npm run build`           | Build your production site to `./dist/`          |
 | `npx wrangler login`      | Logins into Cloudflare locally                   |
 | `npm run db:migrate:local`| Runs DB migrations to cloudflare D1 instance     |
-| `npx wrangler dev --port 8787` | Runs the Server for API testing             |
 
 
 ##
