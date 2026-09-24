@@ -11,7 +11,7 @@
     "db:migrate:remote": "wrangler d1 migrations apply south-pitt-history-metadata --remote"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.6.12",
+    "@astrojs/cloudflare": "^12.6.13",
     "astro": "^5.16.5"
   },
   "devDependencies": {

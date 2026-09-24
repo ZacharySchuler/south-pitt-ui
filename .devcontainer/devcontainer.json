@@ -1,0 +1,36 @@
+{
+  "name": "South Pitt UI",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+
+  "remoteUser": "node",
+  "updateRemoteUserUID": true,
+
+  "postCreateCommand": "sudo chown -R node:node ${containerWorkspaceFolder} && npm ci",
+
+  "forwardPorts": [
+    4321,
+    8787,
+    8976
+  ],
+
+  "portsAttributes": {
+    "4321": {
+      "label": "Astro"
+    },
+    "8787": {
+      "label": "Wrangler"
+    },
+    "8976": {
+      "label": "Wrangler login callback"
+    }
+  },
+
+  "mounts": [
+    "source=south-pitt-ui-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=south-pitt-ui-wrangler-config,target=/home/node/.config/.wrangler,type=volume"
+  ],
+
+  "runArgs": [
+    "--init"
+  ]
+}
