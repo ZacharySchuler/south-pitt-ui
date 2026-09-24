@@ -25,9 +25,9 @@ The History Book should:
 * Make submitted memories immediately visible
 * Not require admin approval or moderation
 * Store metadata in Cloudflare D1
-* Store photos in the club Google Drive
-* Keep Google Drive photos private
-* Serve photos through the backend rather than exposing public Drive URLs
+* Store photos in Cloudflare R2
+* Keep R2 objects private (no public bucket URLs)
+* Serve photos through the backend rather than exposing public R2 URLs
 
 The existing public website should remain mostly static.
 
@@ -49,7 +49,7 @@ The existing public website should remain mostly static.
                Cloudflare Worker
                  ┌──────┴──────┐
                  ▼             ▼
-                D1       Google Drive
+                D1            R2
              metadata       photos
 ```
 
@@ -59,7 +59,7 @@ Cloudflare Worker responsibilities:
 * history API
 * memory creation
 * photo retrieval
-* Google Drive integration
+* Cloudflare R2 integration
 * Discord interactions
 * request validation
 
@@ -67,12 +67,12 @@ Cloudflare D1 responsibilities:
 
 * memories
 * photo metadata
-* storage IDs
+* storage IDs (R2 object keys)
 * submission metadata
 
-Google Drive responsibilities:
+Cloudflare R2 responsibilities:
 
-* original image storage
+* original image object storage
 
 ---
 
@@ -95,9 +95,9 @@ Memory
 └── photos[]
 ```
 
-Do not model the application around Google Drive folders.
+Do not model the application around R2 key prefixes or “folders.”
 
-Google Drive should only be a storage implementation.
+R2 should only be a storage implementation.
 
 ---
 
@@ -110,6 +110,8 @@ Suggested name:
 ```text
 rugby-history
 ```
+
+(Actual deployed name may differ, e.g. `south-pitt-history-metadata`.)
 
 Create a `memories` table.
 
@@ -153,13 +155,13 @@ storage_provider
 storage_id
 ```
 
-Do not hardcode the schema around Google Drive-specific field names.
+Do not hardcode the schema around R2-specific field names.
 
 Example:
 
 ```text
-storage_provider = "google_drive"
-storage_id = "<google-drive-file-id>"
+storage_provider = "r2"
+storage_id = "memories/42/0-team-photo.jpg"
 ```
 
 ---
@@ -216,7 +218,7 @@ src/
 │   └── memory-repository.ts
 │
 └── storage/
-    └── google-drive-storage.ts
+    └── r2-photo-storage.ts
 ```
 
 The website and Discord integrations should reuse the same domain/service functions.
@@ -371,44 +373,57 @@ History page
 
 ---
 
-# Step 7 — Connect Google Drive
+# Step 7 — Create the Cloudflare R2 Bucket
 
-Create a folder in the club Google Drive.
+Create an R2 bucket for History Book photos.
 
-Suggested structure:
+Suggested name:
 
 ```text
-Hooligans History Book/
-├── 2026/
-├── 2025/
-├── 2024/
-└── Legacy/
+south-pitt-history-photos
 ```
 
-The exact folder structure should not be relied on by the application.
+Configure the Worker with an R2 binding in Wrangler, for example:
 
-Enable the Google Drive API.
+```jsonc
+"r2_buckets": [
+  {
+    "binding": "HISTORY_PHOTOS",
+    "bucket_name": "south-pitt-history-photos"
+  }
+]
+```
 
-Configure OAuth credentials so the Cloudflare Worker can access the club Google account.
+Keep the bucket **private**.
 
-Store secrets in Cloudflare secrets.
+Do not enable a public R2.dev subdomain or public custom domain for this bucket.
 
-Possible values:
+The Worker binding is the primary access path. Do not rely on long-lived S3 access keys in application code when the Worker binding is available.
+
+Optional for local/dev tooling only (import scripts, ops):
 
 ```text
-GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET
-GOOGLE_REFRESH_TOKEN
-GOOGLE_DRIVE_ROOT_FOLDER_ID
+R2_ACCOUNT_ID
+R2_ACCESS_KEY_ID
+R2_SECRET_ACCESS_KEY
+R2_BUCKET_NAME
 ```
 
 Never commit these values to source control.
+
+Object keys should be opaque application-generated IDs (with optional prefixes for ops convenience). Example:
+
+```text
+memories/<memory-id>/<sort>-<uuid>-<safe-filename>
+```
+
+The application must not require browsing R2 “folders” to function.
 
 ---
 
 # Step 8 — Create a Photo Storage Abstraction
 
-Do not let the rest of the application directly depend on Google Drive.
+Do not let the rest of the application directly depend on R2 APIs.
 
 Create an interface conceptually similar to:
 
@@ -424,18 +439,20 @@ Example returned value:
 
 ```typescript
 {
-    provider: "google_drive",
-    id: "1ABCxyz..."
+    provider: "r2",
+    id: "memories/42/0-a1b2c3-team-photo.jpg"
 }
 ```
 
 Implement:
 
 ```text
-GoogleDrivePhotoStorage
+R2PhotoStorage
 ```
 
 The memory service should depend on the generic `PhotoStorage` abstraction.
+
+Use the Worker `HISTORY_PHOTOS` R2 binding (`env.HISTORY_PHOTOS.put/get/delete`).
 
 ---
 
@@ -467,7 +484,7 @@ Browser
    ▼
 Cloudflare Worker
    │
-   ├── upload images → Google Drive
+   ├── upload images → R2
    │
    └── save metadata → D1
 ```
@@ -480,14 +497,14 @@ There is no approval process.
 
 # Step 10 — Store Photo Metadata in D1
 
-When an image is uploaded successfully to Google Drive, create a `memory_photos` record.
+When an image is uploaded successfully to R2, create a `memory_photos` record.
 
 Example:
 
 ```text
 memory_id = 42
-storage_provider = "google_drive"
-storage_id = "1ABCxyz..."
+storage_provider = "r2"
+storage_id = "memories/42/0-a1b2c3-team-photo.jpg"
 original_filename = "team-photo.jpg"
 sort_order = 0
 ```
@@ -498,9 +515,9 @@ If multiple images exist, each should have its own `memory_photos` row.
 
 # Step 11 — Serve Photos Through the Worker
 
-Do not expose public Google Drive URLs.
+Do not expose public R2 URLs.
 
-Keep Drive files private.
+Keep R2 objects private.
 
 Implement:
 
@@ -521,8 +538,8 @@ Cloudflare Worker
    │
    ├── verify session
    ├── find photo in D1
-   ├── get storage_id
-   ├── fetch from Google Drive
+   ├── get storage_id (R2 object key)
+   ├── fetch object from R2 binding
    └── return image bytes
 ```
 
@@ -532,7 +549,7 @@ The HTML should use URLs similar to:
 /api/history/photos/123
 ```
 
-rather than Google Drive links.
+rather than R2 public links.
 
 ---
 
@@ -669,7 +686,7 @@ DISCORD_GUILD_ID
 
 # Step 16 — Translate Discord Submissions Into the Core Domain Model
 
-Do not put Google Drive or D1 logic directly into the Discord route.
+Do not put R2 or D1 logic directly into the Discord route.
 
 Translate the Discord command into a normal memory creation request.
 
@@ -711,9 +728,9 @@ Cloudflare Worker
        ├── download attachment
        │
        ▼
-Google Drive
+R2
        │
-       └── return Drive file ID
+       └── return object key
        │
        ▼
 D1
@@ -721,7 +738,7 @@ D1
 
 Do not rely on Discord as permanent file storage.
 
-After ingestion, Google Drive should be the permanent copy.
+After ingestion, R2 should be the permanent copy.
 
 ---
 
@@ -777,7 +794,7 @@ or:
 B. resize/compress uploads
 ```
 
-If preserving originals, monitor Google Drive storage usage.
+If preserving originals, monitor R2 storage usage.
 
 A possible future design is:
 
@@ -797,13 +814,13 @@ Define expected behavior if:
 
 ```text
 D1 insert succeeds
-but Google Drive upload fails
+but R2 upload fails
 ```
 
 or:
 
 ```text
-Google Drive upload succeeds
+R2 upload succeeds
 but D1 insert fails
 ```
 
@@ -820,14 +837,13 @@ Document the chosen failure strategy.
 Before importing a large archive:
 
 * verify D1 backups/export
-* verify Google Drive accessibility by club officers
-* ensure secrets are not tied only to a personal account
-* make Cloudflare ownership transferable to future club officers
-* document Google Cloud ownership
+* verify R2 bucket accessibility by club officers
+* ensure Cloudflare account ownership is transferable to future club officers
+* document R2 bucket name/binding and retention expectations
 * document Discord application ownership
 * document recovery steps
 * test expired/invalid authentication
-* test inaccessible Drive files
+* test missing/inaccessible R2 objects
 * test malformed Discord requests
 
 ---
@@ -850,7 +866,7 @@ photos/
 
 The importer can:
 
-1. upload photos to Drive
+1. upload photos to R2
 2. create D1 memory records
 3. create photo associations
 
@@ -872,9 +888,9 @@ Implement in this exact general order:
 7. Implement GET /api/history/memories
 8. Build /history
 9. Build /history/submit
-10. Connect Google Drive
+10. Create R2 bucket + Wrangler binding
 11. Create PhotoStorage abstraction
-12. Implement GoogleDrivePhotoStorage
+12. Implement R2PhotoStorage
 13. Add photo uploads
 14. Add protected photo retrieval
 15. Add shared-password authentication
@@ -900,11 +916,11 @@ When implementing this project, preserve these rules:
 
 2. D1 stores structured metadata.
 
-3. Google Drive stores image files.
+3. Cloudflare R2 stores image files.
 
-4. D1 stores Google Drive file IDs, not public Drive URLs.
+4. D1 stores R2 object keys (`storage_id`), not public R2 URLs.
 
-5. Google Drive files remain private.
+5. R2 objects remain private.
 
 6. Photos are served through the Cloudflare Worker.
 
@@ -912,7 +928,7 @@ When implementing this project, preserve these rules:
 
 8. Discord is an input interface, not a storage system.
 
-9. Google Drive is a storage implementation, not the application's database.
+9. R2 is a storage implementation, not the application's database.
 
 10. Do not build admin approval or moderation functionality.
 
@@ -920,7 +936,7 @@ When implementing this project, preserve these rules:
 
 12. Keep infrastructure-specific code behind abstractions where practical.
 
-13. Keep credentials and tokens in Cloudflare secrets.
+13. Keep credentials and tokens in Cloudflare secrets (and use Worker R2 bindings where possible).
 
 14. Do not expose the shared team password to frontend JavaScript.
 
@@ -928,10 +944,20 @@ When implementing this project, preserve these rules:
 
 ---
 
-# Suggested First LLM Task
+# Progress Notes
+
+As of the History Book feature branch:
+
+* Steps 1–6 are implemented (D1, Worker API stubs → text create/list, `/history` page).
+* Google Drive was considered for Steps 7–11 and rejected in favor of Cloudflare R2.
+* Next implementation slice: Steps 7–11 with R2 (bucket + binding, `PhotoStorage`, submit + upload, photo proxy).
+
+---
+
+# Suggested Next LLM Task
 
 Start with:
 
-"Implement Step 1 through Step 3 of this plan. Do not implement later steps yet. Show me the proposed file structure, D1 migration, Wrangler configuration changes, and minimal Worker entry point. Explain any assumptions before providing the code."
+"Implement Steps 7 through 11 using Cloudflare R2 instead of Google Drive. Add the R2 bucket binding in Wrangler, implement `R2PhotoStorage` behind `PhotoStorage`, support multipart photo uploads on memory create, store `memory_photos` rows with `storage_provider = \"r2\"`, add `/history/submit`, and serve photos via `GET /api/history/photos/:photoId`. Do not implement auth or Discord yet. Explain any assumptions and list manual Cloudflare setup steps before coding."
 
-After that task is complete, continue one step or small group of steps at a time rather than asking the LLM to implement the entire system in a single pass.
+After that task is complete, continue with authentication (Steps 12–13), then Discord (Steps 14–18), rather than asking the LLM to implement the entire remaining system in a single pass.
