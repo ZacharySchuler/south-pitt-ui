@@ -1,0 +1,181 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getEnv } from "../server/env";
+import {
+	formatEventDate,
+	groupMemoriesByYear,
+} from "../server/services/memory-display";
+import { createMemoryService } from "../server/services/memory-service";
+
+export const prerender = false;
+
+let yearGroups: ReturnType<typeof groupMemoriesByYear> = [];
+let loadError: string | null = null;
+
+try {
+	const service = createMemoryService(getEnv(Astro.locals));
+	const memories = await service.listMemories();
+	yearGroups = groupMemoriesByYear(memories);
+} catch (error) {
+	console.error("Failed to load history memories", error);
+	loadError = "Unable to load the History Book right now. Please try again later.";
+}
+---
+
+<Layout
+	title="Hooligans History | South Pitt Rugby"
+	description="Shared memories from South Pittsburgh Rugby Football Club."
+>
+	<section class="history-page" aria-labelledby="history-title">
+		<header class="history-header">
+			<h1 id="history-title">Hooligans History</h1>
+			<p class="history-intro">
+				Moments from the club — tournaments, travel, and everything in between.
+			</p>
+		</header>
+
+		{
+			loadError ? (
+				<p class="history-status history-status--error" role="alert">
+					{loadError}
+				</p>
+			) : yearGroups.length === 0 ? (
+				<p class="history-status">
+					No memories yet. Check back after the first submissions land.
+				</p>
+			) : (
+				yearGroups.map((group) => (
+					<section class="history-year" aria-labelledby={`year-${group.year}`}>
+						<h2 id={`year-${group.year}`} class="history-year-title">
+							{group.year}
+						</h2>
+						<hr class="history-year-rule" />
+
+						<ul class="history-memory-list">
+							{group.memories.map((memory) => {
+								const displayDate = formatEventDate(memory.eventDate);
+								const title = memory.title?.trim() || null;
+
+								return (
+									<li class="history-memory">
+										{title ? (
+											<h3 class="history-memory-title">{title}</h3>
+										) : null}
+										{displayDate ? (
+											<p class="history-memory-date">{displayDate}</p>
+										) : null}
+										<p class="history-memory-caption">{memory.caption}</p>
+										{memory.photos.length > 0 ? (
+											<ul class="history-photo-list" aria-label="Photos">
+												{memory.photos.map((photo) => (
+													<li>
+														{/* Photo proxy URLs land in Step 11 */}
+														<span class="history-photo-placeholder">
+															{photo.originalFilename ?? `Photo ${photo.id}`}
+														</span>
+													</li>
+												))}
+											</ul>
+										) : null}
+									</li>
+								);
+							})}
+						</ul>
+					</section>
+				))
+			)
+		}
+	</section>
+</Layout>
+
+<style>
+	.history-page {
+		max-width: 720px;
+		margin: 0 auto;
+		padding: 2.5rem 1.5rem 4rem;
+	}
+
+	.history-header {
+		margin-bottom: 2.5rem;
+	}
+
+	.history-header h1 {
+		color: var(--primary);
+		font-size: clamp(1.75rem, 4vw, 2.25rem);
+		margin-bottom: 0.75rem;
+	}
+
+	.history-intro {
+		color: #444;
+		line-height: 1.5;
+		max-width: 40rem;
+	}
+
+	.history-status {
+		color: #555;
+		line-height: 1.5;
+	}
+
+	.history-status--error {
+		color: #8b1e1e;
+	}
+
+	.history-year {
+		margin-bottom: 2.75rem;
+	}
+
+	.history-year-title {
+		color: var(--primary);
+		font-size: 1.5rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+	}
+
+	.history-year-rule {
+		border: none;
+		border-top: 2px solid var(--accent);
+		margin: 0.65rem 0 1.5rem;
+	}
+
+	.history-memory-list {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 1.75rem;
+	}
+
+	.history-memory-title {
+		font-size: 1.15rem;
+		font-weight: 600;
+		color: var(--text);
+		margin-bottom: 0.25rem;
+	}
+
+	.history-memory-date {
+		color: #666;
+		font-size: 0.95rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.history-memory-caption {
+		line-height: 1.55;
+		color: var(--text);
+		white-space: pre-wrap;
+	}
+
+	.history-photo-list {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+	}
+
+	.history-photo-placeholder {
+		display: inline-block;
+		padding: 0.35rem 0.6rem;
+		background: #f0f2f8;
+		color: #555;
+		font-size: 0.85rem;
+	}
+</style>
