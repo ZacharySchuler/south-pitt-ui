@@ -1,0 +1,232 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+export const prerender = false;
+
+// TODO(history-auth): Gate this page on a valid session (Step 12).
+// Unauthenticated visitors should be redirected to /history/login/.
+
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
+
+const currentYear = new Date().getFullYear();
+---
+
+<Layout
+	title="Submit a Memory | Hooligans History"
+	description="Add a memory to the South Pitt Rugby History Book."
+	robots="noindex, nofollow"
+>
+	<section class="submit-page" aria-labelledby="submit-title">
+		<header class="submit-header">
+			<p class="submit-back">
+				<a href="/history/">← Back to History</a>
+			</p>
+			<h1 id="submit-title">Submit a Memory</h1>
+			<p class="submit-intro">
+				Share a moment from the club. Photos are optional; successful
+				submissions show up on the History Book immediately.
+			</p>
+		</header>
+
+		<form id="memory-form" class="submit-form" novalidate>
+			<label class="field">
+				<span>Year <abbr title="required">*</abbr></span>
+				<input
+					type="number"
+					name="year"
+					required
+					min="1900"
+					max="2100"
+					value={currentYear}
+				/>
+			</label>
+
+			<label class="field">
+				<span>Date (optional)</span>
+				<input type="date" name="eventDate" />
+			</label>
+
+			<label class="field">
+				<span>Title (optional)</span>
+				<input type="text" name="title" maxlength="200" placeholder="Pittsburgh 7s" />
+			</label>
+
+			<label class="field">
+				<span>Caption <abbr title="required">*</abbr></span>
+				<textarea
+					name="caption"
+					required
+					rows="4"
+					maxlength="4000"
+					placeholder="What happened?"
+				></textarea>
+			</label>
+
+			<label class="field">
+				<span>Photos (optional, up to 10)</span>
+				<input
+					type="file"
+					name="photos"
+					accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif"
+					multiple
+				/>
+			</label>
+
+			<input type="hidden" name="source" value="web" />
+
+			<p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+
+			<div class="actions">
+				<button type="submit" id="submit-button">Add to History Book</button>
+			</div>
+		</form>
+	</section>
+</Layout>
+
+<script>
+	const form = document.getElementById("memory-form");
+	const statusEl = document.getElementById("form-status");
+	const submitButton = document.getElementById("submit-button");
+
+	form?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		if (!(form instanceof HTMLFormElement)) return;
+
+		statusEl && (statusEl.textContent = "Submitting…");
+		statusEl?.classList.remove("form-status--error", "form-status--ok");
+		if (submitButton instanceof HTMLButtonElement) {
+			submitButton.disabled = true;
+		}
+
+		try {
+			const formData = new FormData(form);
+			const response = await fetch("/api/history/memories", {
+				method: "POST",
+				body: formData,
+			});
+
+			const payload = await response.json().catch(() => ({}));
+			if (!response.ok) {
+				const message =
+					typeof payload?.message === "string"
+						? payload.message
+						: "Submission failed. Please try again.";
+				throw new Error(message);
+			}
+
+			statusEl && (statusEl.textContent = "Saved — opening the History Book…");
+			statusEl?.classList.add("form-status--ok");
+			window.location.assign("/history/");
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : "Submission failed.";
+			statusEl && (statusEl.textContent = message);
+			statusEl?.classList.add("form-status--error");
+			if (submitButton instanceof HTMLButtonElement) {
+				submitButton.disabled = false;
+			}
+		}
+	});
+</script>
+
+<style>
+	.submit-page {
+		max-width: 640px;
+		margin: 0 auto;
+		padding: 2.5rem 1.5rem 4rem;
+	}
+
+	.submit-back {
+		margin-bottom: 1rem;
+	}
+
+	.submit-back a {
+		color: var(--primary);
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.submit-back a:hover {
+		text-decoration: underline;
+	}
+
+	.submit-header h1 {
+		color: var(--primary);
+		font-size: clamp(1.75rem, 4vw, 2.1rem);
+		margin-bottom: 0.75rem;
+	}
+
+	.submit-intro {
+		color: #444;
+		line-height: 1.5;
+		margin-bottom: 2rem;
+	}
+
+	.submit-form {
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		font-weight: 500;
+	}
+
+	.field input,
+	.field textarea {
+		font: inherit;
+		font-weight: 400;
+		padding: 0.65rem 0.75rem;
+		border: 1px solid #c5c9d6;
+		border-radius: 4px;
+		background: #fff;
+		color: var(--text);
+	}
+
+	.field input:focus,
+	.field textarea:focus {
+		outline: 2px solid var(--accent);
+		outline-offset: 1px;
+	}
+
+	.actions {
+		margin-top: 0.5rem;
+	}
+
+	#submit-button {
+		background: var(--primary);
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		padding: 0.75rem 1.25rem;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	#submit-button:disabled {
+		opacity: 0.7;
+		cursor: wait;
+	}
+
+	#submit-button:hover:not(:disabled) {
+		filter: brightness(1.05);
+	}
+
+	.form-status {
+		min-height: 1.25rem;
+		font-size: 0.95rem;
+		color: #555;
+	}
+
+	.form-status--error {
+		color: #8b1e1e;
+	}
+
+	.form-status--ok {
+		color: #1f6b3a;
+	}
+</style>
