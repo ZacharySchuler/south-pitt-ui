@@ -3,6 +3,9 @@ import Layout from "../../layouts/Layout.astro";
 
 export const prerender = false;
 
+// TODO(history-auth): Gate this page on a valid session (Step 12).
+// Unauthenticated visitors should be redirected to /history/login/.
+
 const currentYear = new Date().getFullYear();
 ---
 

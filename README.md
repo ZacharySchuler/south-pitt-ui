@@ -112,4 +112,11 @@ See [`docs/history-book-cloudflare-setup.md`](docs/history-book-cloudflare-setup
 | `POST /api/history/memories` | JSON or multipart create |
 | `GET /api/history/memories` | List memories including `photos[].url` |
 
-Auth (shared team password) is not implemented yet — treat history routes as open until Steps 12–13. Photo object URLs are publicly readable by design.  
+Auth (shared team password) is not implemented yet — treat history routes as open until Steps 12–13. Photo object URLs are publicly readable by design.
+
+### Remaining follow-ups (code TODOs)
+
+Search the repo for:
+
+- `TODO(history-auth)` — shared password login/logout and route protection (Steps 12–13)
+- `TODO(history-discord)` — Discord `/yearbook` interactions into `createMemory()` (Steps 14–18)  

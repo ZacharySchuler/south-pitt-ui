@@ -12,6 +12,9 @@ export const prerender = false;
 /**
  * GET /api/history/memories
  * Returns memories ordered by year DESC, event_date DESC, created_at DESC.
+ *
+ * TODO(history-auth): Require a valid History Book session before listing
+ * (Step 12). Unauthenticated requests should 401 / redirect to login.
  */
 export const GET: APIRoute = async ({ locals }) => {
 	try {
@@ -30,6 +33,9 @@ export const GET: APIRoute = async ({ locals }) => {
 /**
  * POST /api/history/memories
  * Accepts JSON (text-only) or multipart/form-data (optional photos → R2).
+ *
+ * TODO(history-auth): Require a valid History Book session before creating
+ * memories (Step 12), except whatever public policy we explicitly choose later.
  */
 export const POST: APIRoute = async ({ request, locals }) => {
 	const contentType = request.headers.get("content-type") ?? "";

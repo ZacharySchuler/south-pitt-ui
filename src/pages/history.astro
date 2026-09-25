@@ -9,6 +9,11 @@ import { createMemoryService } from "../server/services/memory-service";
 
 export const prerender = false;
 
+// TODO(history-auth): Gate this page on a valid session (Step 12).
+// Unauthenticated visitors should be redirected to /history/login/.
+// TODO(history-auth): Add /history/login/ page (shared team password form).
+// TODO(history-auth): Add a logout control that POSTs /api/history/logout (Step 13).
+
 let yearGroups: ReturnType<typeof groupMemoriesByYear> = [];
 let loadError: string | null = null;
 
