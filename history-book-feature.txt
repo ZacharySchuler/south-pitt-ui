@@ -9,7 +9,7 @@ We want to add a private "History Book" feature to the website.
 The History Book should:
 
 * Be accessible from the existing website under `/history`
-* Be protected by a shared team password
+* Be protected by a shared team password (for browsing/submitting memories)
 * Allow users to submit memories from the website
 * Allow users to submit memories from Discord
 * Allow each memory to contain:
@@ -26,10 +26,17 @@ The History Book should:
 * Not require admin approval or moderation
 * Store metadata in Cloudflare D1
 * Store photos in Cloudflare R2
-* Keep R2 objects private (no public bucket URLs)
-* Serve photos through the backend rather than exposing public R2 URLs
+* Serve photos via **public R2 URLs** (CDN-backed) for performance and lower Worker usage
+* Accept that photo object URLs are readable without a History Book session if someone has the link
 
 The existing public website should remain mostly static.
+
+### Privacy posture (explicit tradeoff)
+
+* `/history` pages and history APIs are password-protected.
+* Photo **files** are public at the object URL level (anyone with the URL can view them).
+* Mitigate casual discovery by using unguessable object keys (UUIDs), not sequential filenames.
+* Do **not** proxy image bytes through the Worker on every page view.
 
 ---
 
@@ -50,7 +57,13 @@ The existing public website should remain mostly static.
                  ┌──────┴──────┐
                  ▼             ▼
                 D1            R2
-             metadata       photos
+             metadata     upload photos
+                              │
+                              ▼
+                     Public R2 URL / CDN
+                              │
+                              ▼
+                     <img src="https://…">
 ```
 
 Cloudflare Worker responsibilities:
@@ -58,8 +71,8 @@ Cloudflare Worker responsibilities:
 * authentication
 * history API
 * memory creation
-* photo retrieval
-* Cloudflare R2 integration
+* photo **upload** to R2 (via binding)
+* building/returning public photo URLs in API responses
 * Discord interactions
 * request validation
 
@@ -73,6 +86,7 @@ Cloudflare D1 responsibilities:
 Cloudflare R2 responsibilities:
 
 * original image object storage
+* public HTTP access for stored objects (custom domain preferred)
 
 ---
 
@@ -161,8 +175,10 @@ Example:
 
 ```text
 storage_provider = "r2"
-storage_id = "memories/42/0-team-photo.jpg"
+storage_id = "memories/42/a1b2c3d4-team-photo.jpg"
 ```
+
+Public URLs are derived at read time from a configured public base URL + `storage_id` (preferred). Do not require storing full public URLs in D1 unless needed for legacy imports.
 
 ---
 
@@ -179,10 +195,15 @@ Initial API routes:
 ```text
 GET  /api/history/memories
 POST /api/history/memories
-GET  /api/history/photos/:photoId
 
 POST /api/history/login
 POST /api/history/logout
+```
+
+Do **not** require a Worker photo-proxy route for normal viewing:
+
+```text
+GET /api/history/photos/:photoId   # optional / unused for public-R2 architecture
 ```
 
 Later add:
@@ -205,7 +226,6 @@ src/
 │
 ├── routes/
 │   ├── memories.ts
-│   ├── photos.ts
 │   ├── auth.ts
 │   └── discord.ts
 │
@@ -302,7 +322,7 @@ The frontend should not need to know anything about D1.
 
 Return a clean JSON API model.
 
-Example:
+Example (after photos exist):
 
 ```json
 [
@@ -313,7 +333,14 @@ Example:
     "title": "Pittsburgh 7s",
     "caption": "We finally brought home the trophy.",
     "source": "web",
-    "photos": []
+    "photos": [
+      {
+        "id": 123,
+        "url": "https://history-photos.southpittrugby.com/memories/42/a1b2c3d4-team-photo.jpg",
+        "originalFilename": "team-photo.jpg",
+        "sortOrder": 0
+      }
+    ]
   }
 ]
 ```
@@ -371,9 +398,11 @@ D1
 History page
 ```
 
+When photos exist, `<img>` tags should use the **public R2 URLs** from the API model, not Worker proxy paths.
+
 ---
 
-# Step 7 — Create the Cloudflare R2 Bucket
+# Step 7 — Create the Cloudflare R2 Bucket (Public Read)
 
 Create an R2 bucket for History Book photos.
 
@@ -394,30 +423,34 @@ Configure the Worker with an R2 binding in Wrangler, for example:
 ]
 ```
 
-Keep the bucket **private**.
-
-Do not enable a public R2.dev subdomain or public custom domain for this bucket.
-
-The Worker binding is the primary access path. Do not rely on long-lived S3 access keys in application code when the Worker binding is available.
-
-Optional for local/dev tooling only (import scripts, ops):
+Enable **public read** access for objects, preferably via a **custom domain** on the club site, e.g.:
 
 ```text
-R2_ACCOUNT_ID
-R2_ACCESS_KEY_ID
-R2_SECRET_ACCESS_KEY
-R2_BUCKET_NAME
+https://history-photos.southpittrugby.com/<object-key>
 ```
 
-Never commit these values to source control.
-
-Object keys should be opaque application-generated IDs (with optional prefixes for ops convenience). Example:
+Store the public base URL as a Worker var/secret, e.g.:
 
 ```text
-memories/<memory-id>/<sort>-<uuid>-<safe-filename>
+R2_PUBLIC_BASE_URL=https://history-photos.southpittrugby.com
+```
+
+The Worker binding remains the write path (`put` / `delete`). Browsers read objects directly from the public base URL.
+
+Object keys should be unguessable. Example:
+
+```text
+memories/<memory-id>/<uuid>-<safe-filename>
 ```
 
 The application must not require browsing R2 “folders” to function.
+
+Manual Cloudflare setup (once):
+
+1. Create the R2 bucket.
+2. Attach a public custom domain (preferred) or enable the managed public bucket URL.
+3. Add the Wrangler R2 binding.
+4. Set `R2_PUBLIC_BASE_URL` for local (`.dev.vars`) and production.
 
 ---
 
@@ -430,8 +463,8 @@ Create an interface conceptually similar to:
 ```typescript
 interface PhotoStorage {
     upload(file: File, metadata?: object): Promise<StoredPhoto>;
-    download(id: string): Promise<Response>;
     delete(id: string): Promise<void>;
+    publicUrl(id: string): string;
 }
 ```
 
@@ -440,7 +473,7 @@ Example returned value:
 ```typescript
 {
     provider: "r2",
-    id: "memories/42/0-a1b2c3-team-photo.jpg"
+    id: "memories/42/a1b2c3d4-team-photo.jpg"
 }
 ```
 
@@ -450,9 +483,12 @@ Implement:
 R2PhotoStorage
 ```
 
+* `upload` / `delete` use `env.HISTORY_PHOTOS`
+* `publicUrl` returns `${R2_PUBLIC_BASE_URL}/${storage_id}`
+
 The memory service should depend on the generic `PhotoStorage` abstraction.
 
-Use the Worker `HISTORY_PHOTOS` R2 binding (`env.HISTORY_PHOTOS.put/get/delete`).
+A Worker `download()` / photo-proxy endpoint is **not** required for normal viewing.
 
 ---
 
@@ -484,9 +520,21 @@ Browser
    ▼
 Cloudflare Worker
    │
-   ├── upload images → R2
+   ├── upload images → R2 (private write via binding)
    │
-   └── save metadata → D1
+   └── save metadata → D1 (storage_id = object key)
+```
+
+Viewing flow:
+
+```text
+Browser
+   │
+   ▼
+<img src="{R2_PUBLIC_BASE_URL}/{storage_id}">
+   │
+   ▼
+Public R2 / CDN
 ```
 
 A successful submission should immediately become visible on `/history`.
@@ -504,52 +552,41 @@ Example:
 ```text
 memory_id = 42
 storage_provider = "r2"
-storage_id = "memories/42/0-a1b2c3-team-photo.jpg"
+storage_id = "memories/42/a1b2c3d4-team-photo.jpg"
 original_filename = "team-photo.jpg"
 sort_order = 0
 ```
 
 If multiple images exist, each should have its own `memory_photos` row.
 
+API responses should include a computed `url` for each photo using `R2_PUBLIC_BASE_URL`.
+
 ---
 
-# Step 11 — Serve Photos Through the Worker
+# Step 11 — Use Public R2 URLs in the Frontend
 
-Do not expose public R2 URLs.
+Do not proxy image bytes through the Worker for normal History Book viewing.
 
-Keep R2 objects private.
-
-Implement:
+HTML should use URLs similar to:
 
 ```text
-GET /api/history/photos/:photoId
+https://history-photos.southpittrugby.com/memories/42/a1b2c3d4-team-photo.jpg
 ```
 
-Flow:
-
-```text
-Browser
-   │
-   ▼
-GET /api/history/photos/123
-   │
-   ▼
-Cloudflare Worker
-   │
-   ├── verify session
-   ├── find photo in D1
-   ├── get storage_id (R2 object key)
-   ├── fetch object from R2 binding
-   └── return image bytes
-```
-
-The HTML should use URLs similar to:
+rather than:
 
 ```text
 /api/history/photos/123
 ```
 
-rather than R2 public links.
+Checklist for this step:
+
+* API memory model includes public `photos[].url`
+* `/history` renders `<img src={photo.url}>`
+* Confirm CDN/cache headers are acceptable
+* Confirm object keys are not trivially guessable
+
+Optional later: signed/short-lived URLs if privacy requirements tighten. Not part of MVP.
 
 ---
 
@@ -605,6 +642,8 @@ Protect:
 except for the login endpoint.
 
 Do not store the team password in frontend JavaScript.
+
+Note: password protection covers pages/APIs. Public R2 photo URLs remain directly fetchable.
 
 ---
 
@@ -738,7 +777,7 @@ D1
 
 Do not rely on Discord as permanent file storage.
 
-After ingestion, R2 should be the permanent copy.
+After ingestion, R2 should be the permanent copy. Clients view the photo via the public R2 URL.
 
 ---
 
@@ -794,7 +833,7 @@ or:
 B. resize/compress uploads
 ```
 
-If preserving originals, monitor R2 storage usage.
+If preserving originals, monitor R2 storage usage and egress.
 
 A possible future design is:
 
@@ -837,14 +876,15 @@ Document the chosen failure strategy.
 Before importing a large archive:
 
 * verify D1 backups/export
-* verify R2 bucket accessibility by club officers
+* verify R2 bucket + public domain accessibility by club officers
 * ensure Cloudflare account ownership is transferable to future club officers
-* document R2 bucket name/binding and retention expectations
+* document R2 bucket name/binding, public base URL, and retention expectations
 * document Discord application ownership
 * document recovery steps
-* test expired/invalid authentication
-* test missing/inaccessible R2 objects
+* test expired/invalid authentication for pages/APIs
+* test missing R2 objects (broken image URLs)
 * test malformed Discord requests
+* accept that photo URLs may leak and remain viewable without login
 
 ---
 
@@ -888,11 +928,11 @@ Implement in this exact general order:
 7. Implement GET /api/history/memories
 8. Build /history
 9. Build /history/submit
-10. Create R2 bucket + Wrangler binding
+10. Create R2 bucket + Wrangler binding + public access / custom domain
 11. Create PhotoStorage abstraction
-12. Implement R2PhotoStorage
+12. Implement R2PhotoStorage (upload/delete + publicUrl)
 13. Add photo uploads
-14. Add protected photo retrieval
+14. Return public photo URLs in API + render them on /history
 15. Add shared-password authentication
 16. Protect /history and history APIs
 17. Add logout
@@ -918,11 +958,11 @@ When implementing this project, preserve these rules:
 
 3. Cloudflare R2 stores image files.
 
-4. D1 stores R2 object keys (`storage_id`), not public R2 URLs.
+4. D1 stores R2 object keys (`storage_id`). Public URLs are derived from `R2_PUBLIC_BASE_URL` + key.
 
-5. R2 objects remain private.
+5. R2 objects are publicly readable at their object URLs (by design, for performance).
 
-6. Photos are served through the Cloudflare Worker.
+6. Browsers load photos directly from public R2/CDN URLs. Do not proxy every image through the Worker.
 
 7. Website submissions and Discord submissions use the same `createMemory()` business logic.
 
@@ -936,7 +976,7 @@ When implementing this project, preserve these rules:
 
 12. Keep infrastructure-specific code behind abstractions where practical.
 
-13. Keep credentials and tokens in Cloudflare secrets (and use Worker R2 bindings where possible).
+13. Keep secrets in Cloudflare secrets; use Worker R2 bindings for uploads.
 
 14. Do not expose the shared team password to frontend JavaScript.
 
@@ -949,8 +989,9 @@ When implementing this project, preserve these rules:
 As of the History Book feature branch:
 
 * Steps 1–6 are implemented (D1, Worker API stubs → text create/list, `/history` page).
-* Google Drive was considered for Steps 7–11 and rejected in favor of Cloudflare R2.
-* Next implementation slice: Steps 7–11 with R2 (bucket + binding, `PhotoStorage`, submit + upload, photo proxy).
+* Google Drive was considered and rejected in favor of Cloudflare R2.
+* Photo serving choice: **public R2 URLs** (not Worker proxy) to save Worker usage and improve performance.
+* Next implementation slice: Steps 7–11 with public R2 (bucket + binding + public domain, `R2PhotoStorage`, submit + upload, public URLs in API/`/history`).
 
 ---
 
@@ -958,6 +999,6 @@ As of the History Book feature branch:
 
 Start with:
 
-"Implement Steps 7 through 11 using Cloudflare R2 instead of Google Drive. Add the R2 bucket binding in Wrangler, implement `R2PhotoStorage` behind `PhotoStorage`, support multipart photo uploads on memory create, store `memory_photos` rows with `storage_provider = \"r2\"`, add `/history/submit`, and serve photos via `GET /api/history/photos/:photoId`. Do not implement auth or Discord yet. Explain any assumptions and list manual Cloudflare setup steps before coding."
+"Implement Steps 7 through 11 using Cloudflare R2 with **public object URLs**. Add the R2 bucket binding and `R2_PUBLIC_BASE_URL`, implement `R2PhotoStorage` (upload/delete/publicUrl), support multipart photo uploads on memory create, store `memory_photos` with `storage_provider = \"r2\"`, add `/history/submit`, and render photos using public R2 URLs. Do not implement a Worker image proxy, auth, or Discord yet. Explain assumptions and list manual Cloudflare setup steps (bucket, public access/custom domain, env vars) before coding."
 
 After that task is complete, continue with authentication (Steps 12–13), then Discord (Steps 14–18), rather than asking the LLM to implement the entire remaining system in a single pass.
