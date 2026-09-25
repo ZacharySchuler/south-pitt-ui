@@ -24,7 +24,7 @@
 	"r2_buckets": [
 		{
 			"binding": "HISTORY_PHOTOS",
-			"bucket_name": "south-pitt-history-photos"
+			"bucket_name": "south-pitt-rfc-photos"
 		}
 	]
 }

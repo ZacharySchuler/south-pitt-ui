@@ -69,7 +69,7 @@ It follows a standard astro directory structure of:
 ## History Book (D1 + R2)
 
 Metadata lives in Cloudflare D1 (`south-pitt-history-metadata`, binding `DB`).
-Photos live in Cloudflare R2 (`south-pitt-history-photos`, binding `HISTORY_PHOTOS`) and are served via **public R2 URLs** (not a Worker image proxy).
+Photos live in Cloudflare R2 (`south-pitt-rfc-photos`, binding `HISTORY_PHOTOS`) and are served via **public R2 URLs** (not a Worker image proxy).
 
 Keep secrets/vars in Cloudflare dashboard / `.dev.vars` (never commit them).
 
@@ -93,7 +93,7 @@ cp .dev.vars.example .dev.vars
 
 ### Cloudflare R2 setup (manual)
 
-1. Create R2 bucket `south-pitt-history-photos` (name must match `wrangler.jsonc`).
+1. Create R2 bucket `south-pitt-rfc-photos` (name must match `wrangler.jsonc`).
 2. Enable public access — prefer a **custom domain**, e.g. `history-photos.southpittrugby.com`.
 3. Confirm the Wrangler binding `HISTORY_PHOTOS` is present (already in repo).
 4. Set `R2_PUBLIC_BASE_URL` locally in `.dev.vars` and in the Worker environment for deploys (no trailing slash).
