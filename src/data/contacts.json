@@ -1,29 +1,38 @@
 {
   "board": { 
     "President": {
-      "name": "Colin Devlin"
+      "name": "Matt \"Bear\" Ostoich"
     },
     "Vice President": {
-      "name": "Jakob Como"
+      "name": "Kristopher Kell"
     },
     "Treasurer": {
-      "name": "Brandon Phan"
+      "name": "Nick van der Merwe"
     },
     "Social Chairman": {
       "name": "Jared Slattery"
     },
     "Match Secretary":{
-      "name": "Kris Kell"
+      "name": "Brian Thoma"
     },
     "Director of Rugby" : {
       "name": "Matt \"Red\" Gribowicz"
+    },
+    "Director of Recruitment" : {
+      "name": "RaShawn Allen"
+    },
+    "Communication Officer":{
+      "name": "Eric Kress"
+    },
+    "Community Liaison": {
+      "name": "Pat Quinn"
+    },
+    "Logistics Coordinator": {
+      "name": "Dominic Sprys"
     }
   },
   "coaches": {
-     "Director of Rugby / D2 Coach": {
-      "name": "Matt \"Red\" Gribowicz"
-    },
-    "D4 Coach":{
+    "Head Coach":{
       "name": "Jakob Como"
     },
     "Forward Coach": {

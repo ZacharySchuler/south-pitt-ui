@@ -1,4 +1,5 @@
 /// <reference types="astro/client" />
+<<<<<<< HEAD
 /// <reference types="@cloudflare/workers-types" />
 
 type Runtime = import("@astrojs/cloudflare").Runtime<Env>;
@@ -26,4 +27,20 @@ interface Env {
 	DISCORD_PUBLIC_KEY?: string;
 	/** TODO(history-discord): Club Discord guild/server id — Steps 15+ */
 	DISCORD_GUILD_ID?: string;
+=======
+
+interface ImportMetaEnv {
+  readonly PUBLIC_GA_MEASUREMENT_ID?: string;
+  readonly PUBLIC_META_PIXEL_ID?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
+interface Window {
+  dataLayer?: unknown[];
+  gtag?: (...args: unknown[]) => void;
+  fbq?: (...args: unknown[]) => void;
+>>>>>>> origin/master
 }

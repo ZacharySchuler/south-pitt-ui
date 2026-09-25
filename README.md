@@ -24,6 +24,44 @@ This repo is configured to deploy automatically using CloudFlare workers.
 The domain is bought on porkbun but namespace servers are configured for cloudflare
 
 
+# Meta Ads / Analytics (UTM + ROI)
+
+Landing page for paid Meta traffic: `https://southpittrugby.com/join/`
+
+## Ad URL (UTMs)
+
+Use destination URLs like:
+
+```text
+https://southpittrugby.com/join/?utm_source=meta&utm_medium=paid_social&utm_campaign=fall_recruit_2026&utm_content=video_a&utm_term=lookalike_local
+```
+
+| Param | Meaning | Example |
+| --- | --- | --- |
+| `utm_source` | Platform | `meta` |
+| `utm_medium` | Channel | `paid_social` |
+| `utm_campaign` | Campaign | `fall_recruit_2026` |
+| `utm_content` | Creative | `video_a` |
+| `utm_term` | Audience | `lookalike_local` |
+
+GA4 picks these up automatically on landing. Keep naming consistent across ads.
+
+## Site tracking setup
+
+1. **GA4** is wired with Measurement ID `G-4FT2F15889` (override via `PUBLIC_GA_MEASUREMENT_ID` if needed).
+2. **Meta Pixel** is wired with Pixel ID `2331957847336483` (override via `PUBLIC_META_PIXEL_ID` if needed).
+3. Both IDs are public client-side values baked into the build; no Cloudflare env vars are required unless you want to override them.
+
+Conversion events fire **only on `/join/` CTAs** (the Meta ads landing page). Discord links on the homepage, culture page, contact page, etc. do **not** fire Lead — that keeps organic traffic from inflating ad conversion counts.
+
+| CTA | GA4 event | Meta Pixel event | Label |
+| --- | --- | --- | --- |
+| Join Discord | `join_discord_click` | `Lead` | `join_page_discord` |
+| Email the team | `join_email_click` | `Lead` | `join_page_email` |
+
+In Meta Ads Manager, optimize on Pixel `Lead`. Distinguish channel via `content_name` (`join_page_discord` vs `join_page_email`). In GA4, mark `join_discord_click` and `join_email_click` as key events, and filter by `utm_source=meta` when judging paid ROI.
+
+
 # Accounts Involved:
 - Cloudflare: Hosting / Deployments
     Username Zrschu (Zachary Schuler's) (hopefully this will get changed)
