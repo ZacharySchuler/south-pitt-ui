@@ -14,6 +14,8 @@ export const prerender = false;
 // TODO(history-auth): Add /history/login/ page (shared team password form).
 // TODO(history-auth): Add a logout control that POSTs /api/history/logout (Step 13).
 
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
+
 let yearGroups: ReturnType<typeof groupMemoriesByYear> = [];
 let loadError: string | null = null;
 
@@ -30,6 +32,7 @@ try {
 <Layout
 	title="Hooligans History | South Pitt Rugby"
 	description="Shared memories from South Pittsburgh Rugby Football Club."
+	robots="noindex, nofollow"
 >
 	<section class="history-page" aria-labelledby="history-title">
 		<header class="history-header">

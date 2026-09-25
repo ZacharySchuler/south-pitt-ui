@@ -6,12 +6,15 @@ export const prerender = false;
 // TODO(history-auth): Gate this page on a valid session (Step 12).
 // Unauthenticated visitors should be redirected to /history/login/.
 
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
+
 const currentYear = new Date().getFullYear();
 ---
 
 <Layout
 	title="Submit a Memory | Hooligans History"
 	description="Add a memory to the South Pitt Rugby History Book."
+	robots="noindex, nofollow"
 >
 	<section class="submit-page" aria-labelledby="submit-title">
 		<header class="submit-header">
