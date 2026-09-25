@@ -2,7 +2,10 @@ import type { APIRoute } from "astro";
 import { toMemoryResponse } from "../../../server/api/memory-response";
 import { getEnv } from "../../../server/env";
 import { createMemoryService } from "../../../server/services/memory-service";
-import { validateCreateMemoryBody } from "../../../server/validation/memory";
+import {
+	validateCreateMemoryBody,
+	validateCreateMemoryForm,
+} from "../../../server/validation/memory";
 
 export const prerender = false;
 
@@ -26,20 +29,35 @@ export const GET: APIRoute = async ({ locals }) => {
 
 /**
  * POST /api/history/memories
- * Creates a text-only memory in D1. Photo uploads are not supported yet.
+ * Accepts JSON (text-only) or multipart/form-data (optional photos → R2).
  */
 export const POST: APIRoute = async ({ request, locals }) => {
-	let body: unknown;
+	const contentType = request.headers.get("content-type") ?? "";
+
+	let validated;
 	try {
-		body = await request.json();
-	} catch {
+		if (contentType.includes("multipart/form-data")) {
+			validated = validateCreateMemoryForm(await request.formData());
+		} else {
+			let body: unknown;
+			try {
+				body = await request.json();
+			} catch {
+				return Response.json(
+					{ error: "invalid_json", message: "Request body must be valid JSON" },
+					{ status: 400 },
+				);
+			}
+			validated = validateCreateMemoryBody(body);
+		}
+	} catch (error) {
+		console.error("POST /api/history/memories parse failed", error);
 		return Response.json(
-			{ error: "invalid_json", message: "Request body must be valid JSON" },
+			{ error: "invalid_request", message: "Could not parse request body" },
 			{ status: 400 },
 		);
 	}
 
-	const validated = validateCreateMemoryBody(body);
 	if (!validated.ok) {
 		return Response.json(
 			{ error: "validation_error", message: validated.error },
@@ -52,10 +70,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		const memory = await service.createMemory(validated.value);
 		return Response.json(toMemoryResponse(memory), { status: 201 });
 	} catch (error) {
-		const message = error instanceof Error ? error.message : "Failed to create memory";
-		if (message.includes("Photo uploads are not implemented")) {
+		const message =
+			error instanceof Error ? error.message : "Failed to create memory";
+		if (
+			message.includes("R2 photo storage is not configured") ||
+			message.includes("At most") ||
+			message.includes("must be a JPEG") ||
+			message.includes("exceeds the") ||
+			message.includes("is empty")
+		) {
 			return Response.json(
-				{ error: "not_supported", message },
+				{ error: "validation_error", message },
 				{ status: 400 },
 			);
 		}

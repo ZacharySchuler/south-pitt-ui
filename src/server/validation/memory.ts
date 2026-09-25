@@ -1,4 +1,5 @@
 import type { CreateMemoryInput } from "../services/memory-service";
+import { validatePhotos } from "./photos";
 
 const MIN_YEAR = 1900;
 const MAX_YEAR = 2100;
@@ -49,42 +50,33 @@ function isValidEventDate(value: string): boolean {
 	return date.toISOString().slice(0, 10) === value;
 }
 
-/**
- * Validate a JSON body for text-only memory creation (Steps 4–5).
- * Photo uploads are rejected until later steps.
- */
-export function validateCreateMemoryBody(
-	body: unknown,
-): ValidationResult<CreateMemoryInput> {
-	if (!isPlainObject(body)) {
-		return { ok: false, error: "Request body must be a JSON object" };
-	}
+function validateMemoryFields(input: {
+	year: unknown;
+	caption: unknown;
+	source: unknown;
+	title?: unknown;
+	eventDate?: unknown;
+	submittedBy?: unknown;
+}): ValidationResult<Omit<CreateMemoryInput, "photos">> {
+	const year =
+		typeof input.year === "string" && input.year.trim() !== ""
+			? Number(input.year)
+			: input.year;
 
-	if (body.photos !== undefined) {
-		const photos = body.photos;
-		if (!Array.isArray(photos) || photos.length > 0) {
-			return {
-				ok: false,
-				error:
-					"Photo uploads are not supported yet. Omit photos or send an empty array.",
-			};
-		}
-	}
-
-	if (typeof body.year !== "number" || !Number.isInteger(body.year)) {
+	if (typeof year !== "number" || !Number.isInteger(year)) {
 		return { ok: false, error: "year must be an integer" };
 	}
-	if (body.year < MIN_YEAR || body.year > MAX_YEAR) {
+	if (year < MIN_YEAR || year > MAX_YEAR) {
 		return {
 			ok: false,
 			error: `year must be between ${MIN_YEAR} and ${MAX_YEAR}`,
 		};
 	}
 
-	if (typeof body.caption !== "string") {
+	if (typeof input.caption !== "string") {
 		return { ok: false, error: "caption must be a string" };
 	}
-	const caption = body.caption.trim();
+	const caption = input.caption.trim();
 	if (caption.length === 0) {
 		return { ok: false, error: "caption is required" };
 	}
@@ -95,10 +87,10 @@ export function validateCreateMemoryBody(
 		};
 	}
 
-	if (typeof body.source !== "string" || body.source.trim().length === 0) {
+	if (typeof input.source !== "string" || input.source.trim().length === 0) {
 		return { ok: false, error: "source is required" };
 	}
-	const source = body.source.trim();
+	const source = input.source.trim();
 	if (!ALLOWED_SOURCES.has(source)) {
 		return {
 			ok: false,
@@ -106,13 +98,13 @@ export function validateCreateMemoryBody(
 		};
 	}
 
-	const titleResult = optionalTrimmedString(body.title, "title", MAX_TITLE_LENGTH);
+	const titleResult = optionalTrimmedString(input.title, "title", MAX_TITLE_LENGTH);
 	if (!titleResult.ok) {
 		return titleResult;
 	}
 
 	const submittedByResult = optionalTrimmedString(
-		body.submittedBy,
+		input.submittedBy,
 		"submittedBy",
 		200,
 	);
@@ -121,11 +113,15 @@ export function validateCreateMemoryBody(
 	}
 
 	let eventDate: string | null = null;
-	if (body.eventDate !== undefined && body.eventDate !== null && body.eventDate !== "") {
-		if (typeof body.eventDate !== "string") {
+	if (
+		input.eventDate !== undefined &&
+		input.eventDate !== null &&
+		input.eventDate !== ""
+	) {
+		if (typeof input.eventDate !== "string") {
 			return { ok: false, error: "eventDate must be a string (YYYY-MM-DD)" };
 		}
-		const trimmed = body.eventDate.trim();
+		const trimmed = input.eventDate.trim();
 		if (!isValidEventDate(trimmed)) {
 			return {
 				ok: false,
@@ -138,12 +134,82 @@ export function validateCreateMemoryBody(
 	return {
 		ok: true,
 		value: {
-			year: body.year,
+			year,
 			caption,
 			source,
 			title: titleResult.value,
 			eventDate,
 			submittedBy: submittedByResult.value,
+		},
+	};
+}
+
+/** Validate a JSON body for memory creation (optional empty photos array). */
+export function validateCreateMemoryBody(
+	body: unknown,
+): ValidationResult<CreateMemoryInput> {
+	if (!isPlainObject(body)) {
+		return { ok: false, error: "Request body must be a JSON object" };
+	}
+
+	if (body.photos !== undefined) {
+		if (!Array.isArray(body.photos)) {
+			return { ok: false, error: "photos must be an array when provided in JSON" };
+		}
+		if (body.photos.length > 0) {
+			return {
+				ok: false,
+				error:
+					"JSON create does not accept photo binaries. Use multipart/form-data with photo files.",
+			};
+		}
+	}
+
+	const fields = validateMemoryFields({
+		year: body.year,
+		caption: body.caption,
+		source: body.source,
+		title: body.title,
+		eventDate: body.eventDate,
+		submittedBy: body.submittedBy,
+	});
+	if (!fields.ok) {
+		return fields;
+	}
+
+	return { ok: true, value: fields.value };
+}
+
+/** Validate multipart form fields + photo files for memory creation. */
+export function validateCreateMemoryForm(
+	form: FormData,
+): ValidationResult<CreateMemoryInput> {
+	const photos = form
+		.getAll("photos")
+		.filter((value): value is File => value instanceof File && value.size > 0);
+
+	const photoCheck = validatePhotos(photos);
+	if (!photoCheck.ok) {
+		return photoCheck;
+	}
+
+	const fields = validateMemoryFields({
+		year: form.get("year"),
+		caption: form.get("caption"),
+		source: form.get("source") ?? "web",
+		title: form.get("title"),
+		eventDate: form.get("eventDate") ?? form.get("date"),
+		submittedBy: form.get("submittedBy"),
+	});
+	if (!fields.ok) {
+		return fields;
+	}
+
+	return {
+		ok: true,
+		value: {
+			...fields.value,
+			photos: photoCheck.value,
 		},
 	};
 }

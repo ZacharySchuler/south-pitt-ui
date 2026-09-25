@@ -1,19 +1,18 @@
 import type { APIRoute } from "astro";
-import { getEnv } from "../../../../server/env";
 
 export const prerender = false;
 
-/** GET /api/history/photos/:photoId — implemented in Step 11. */
-export const GET: APIRoute = async ({ params, locals }) => {
-	void params.photoId;
-	void getEnv(locals);
-
+/**
+ * Photo bytes are served from public R2 URLs, not this Worker route.
+ * Kept as an explicit 410 so old clients fail clearly.
+ */
+export const GET: APIRoute = async () => {
 	return Response.json(
 		{
-			error: "not_implemented",
+			error: "gone",
 			message:
-				"GET /api/history/photos/:photoId will be implemented in Step 11",
+				"Photos are served from public R2 URLs. Use the url field on each photo in GET /api/history/memories.",
 		},
-		{ status: 501 },
+		{ status: 410 },
 	);
 };
