@@ -1,0 +1,16 @@
+# Local Cloudflare Worker / Astro platform-proxy vars.
+# Copy to `.dev.vars` (gitignored) and fill in real values.
+# Never commit `.dev.vars`.
+
+# Public base URL for History Book photos in R2 (no trailing slash)
+# Example: https://history-photos.southpittrugby.com
+R2_PUBLIC_BASE_URL=
+
+# Shared-password auth (Step 12 — not required yet)
+# HISTORY_PASSWORD=
+# HISTORY_SESSION_SECRET=
+
+# Discord (Steps 14+ — not required yet)
+# DISCORD_APPLICATION_ID=
+# DISCORD_PUBLIC_KEY=
+# DISCORD_GUILD_ID=

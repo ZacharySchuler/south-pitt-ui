@@ -7,10 +7,11 @@ export type PhotoUploadMetadata = {
 	filename?: string;
 	contentType?: string;
 	year?: number;
+	memoryId?: number;
 };
 
 export interface PhotoStorage {
 	upload(file: File, metadata?: PhotoUploadMetadata): Promise<StoredPhoto>;
-	download(id: string): Promise<Response>;
 	delete(id: string): Promise<void>;
+	publicUrl(id: string): string;
 }

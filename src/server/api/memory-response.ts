@@ -1,8 +1,9 @@
 import type { Memory, MemoryPhoto } from "../services/memory-service";
 
-/** Public photo shape for JSON responses (no storage internals yet beyond ids). */
+/** Public photo shape for JSON responses. */
 export type MemoryPhotoResponse = {
 	id: number;
+	url: string;
 	originalFilename: string | null;
 	sortOrder: number;
 };
@@ -23,6 +24,7 @@ export type MemoryResponse = {
 function toPhotoResponse(photo: MemoryPhoto): MemoryPhotoResponse {
 	return {
 		id: photo.id,
+		url: photo.url,
 		originalFilename: photo.originalFilename,
 		sortOrder: photo.sortOrder,
 	};

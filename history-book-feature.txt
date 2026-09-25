@@ -409,7 +409,7 @@ Create an R2 bucket for History Book photos.
 Suggested name:
 
 ```text
-south-pitt-history-photos
+south-pitt-rfc-photos
 ```
 
 Configure the Worker with an R2 binding in Wrangler, for example:
@@ -418,7 +418,7 @@ Configure the Worker with an R2 binding in Wrangler, for example:
 "r2_buckets": [
   {
     "binding": "HISTORY_PHOTOS",
-    "bucket_name": "south-pitt-history-photos"
+    "bucket_name": "south-pitt-rfc-photos"
   }
 ]
 ```
