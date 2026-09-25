@@ -15,12 +15,15 @@ interface Env {
 	/** Public base URL for R2 objects, e.g. https://history-photos.southpittrugby.com */
 	R2_PUBLIC_BASE_URL?: string;
 
-	/** Shared team password (or hash) for History Book login — Step 12 */
+	/** TODO(history-auth): Shared team password (or hash) for History Book login — Step 12 */
 	HISTORY_PASSWORD?: string;
-	/** Secret used to sign History Book session cookies — Step 12 */
+	/** TODO(history-auth): Secret used to sign History Book session cookies — Step 12 */
 	HISTORY_SESSION_SECRET?: string;
 
+	/** TODO(history-discord): Discord application id — Steps 14–18 */
 	DISCORD_APPLICATION_ID?: string;
+	/** TODO(history-discord): Discord interactions public key — Steps 15+ */
 	DISCORD_PUBLIC_KEY?: string;
+	/** TODO(history-discord): Club Discord guild/server id — Steps 15+ */
 	DISCORD_GUILD_ID?: string;
 }

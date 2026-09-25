@@ -171,6 +171,10 @@ export function createMemoryService(env: Env): MemoryService {
 	);
 }
 
+// TODO(history-discord): When wiring /api/discord/interactions, reuse this
+// factory and createMemory() with source: "discord" (Steps 16–17). Do not
+// duplicate R2/D1 upload logic inside the Discord route.
+
 function createPhotoStorage(env: Env): PhotoStorage {
 	const publicBaseUrl = env.R2_PUBLIC_BASE_URL?.trim();
 	if (!env.HISTORY_PHOTOS || !publicBaseUrl) {

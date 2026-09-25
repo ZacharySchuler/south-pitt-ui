@@ -3,7 +3,13 @@ import { clearHistorySession } from "../../../server/services/auth-service";
 
 export const prerender = false;
 
-/** POST /api/history/logout — implemented in Step 13. */
+/**
+ * POST /api/history/logout
+ *
+ * TODO(history-auth): Implement Step 13.
+ * - Clear the history session cookie via clearHistorySession()
+ * - Return 200 / redirect-friendly JSON
+ */
 export const POST: APIRoute = async () => {
 	void clearHistorySession;
 

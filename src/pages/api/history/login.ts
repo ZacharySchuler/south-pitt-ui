@@ -4,7 +4,15 @@ import { getEnv } from "../../../server/env";
 
 export const prerender = false;
 
-/** POST /api/history/login — implemented in Step 12. */
+/**
+ * POST /api/history/login
+ *
+ * TODO(history-auth): Implement Step 12.
+ * - Parse password from JSON or form body
+ * - Call loginWithTeamPassword()
+ * - On success, return 200 and set the session cookie
+ * - On failure, return 401 (do not leak whether the password store is configured)
+ */
 export const POST: APIRoute = async ({ request, locals }) => {
 	void request;
 	void loginWithTeamPassword;

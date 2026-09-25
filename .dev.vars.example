@@ -6,11 +6,11 @@
 # Example: https://history-photos.southpittrugby.com
 R2_PUBLIC_BASE_URL=
 
-# Shared-password auth (Step 12 — not required yet)
+# Shared-password auth (TODO history-auth — Step 12)
 # HISTORY_PASSWORD=
 # HISTORY_SESSION_SECRET=
 
-# Discord (Steps 14+ — not required yet)
+# Discord (TODO history-discord — Steps 14–18)
 # DISCORD_APPLICATION_ID=
 # DISCORD_PUBLIC_KEY=
 # DISCORD_GUILD_ID=
